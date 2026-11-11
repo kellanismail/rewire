@@ -1,0 +1,2268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rewire</title>
+<meta name="description" content="Rewire: daily brain games built on real neuroscience tasks, with medical puzzles and a progress tracker.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cellipse%20cx%3D%2232%22%20cy%3D%2234%22%20rx%3D%2222%22%20ry%3D%2220%22%20fill%3D%22%238C6CF0%22%20stroke%3D%22%231F2340%22%20stroke-width%3D%224%22%2F%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2233%22%20r%3D%225%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2239%22%20cy%3D%2233%22%20r%3D%225%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2226%22%20cy%3D%2234%22%20r%3D%222.5%22%20fill%3D%22%231F2340%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2234%22%20r%3D%222.5%22%20fill%3D%22%231F2340%22%2F%3E%3C%2Fsvg%3E">
+<style>
+/* the small reset Claude's viewer normally supplies */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font-size:14px}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;800&display=swap">
+<style>
+/* Layout: a cartoon playroom. Mascot + stats up top, brain map beside today's three-game circuit, then the game shelf.
+   Every object gets a thick ink outline and a hard offset shadow, like a sticker. */
+:root{
+  --bg:#DDF0FF; --dots:#C6E4FB; --surface:#FFFFFF; --sunk:#EEF6FF;
+  --text:#1F2340; --muted:#545A82; --outline:#1F2340; --on-color:#1F2340;
+  --accent:#7B5CE6; --accent-text:#FFFFFF;
+  --d-memory:#8C6CF0; --d-inhibition:#FF6B5C; --d-flexibility:#FFB421; --d-spatial:#1FC29B;
+  --good:#1E9E55; --bad:#E5484D; --gold:#FFC93C;
+  --ink-red:#E5484D; --ink-blue:#2F7BF5; --ink-green:#1F9D52; --ink-purple:#9450E0;
+  --brain:#FFD3DF; --brain-line:#F2A3BA; --glass:#EAF6FF; --label:#FFFFFF;
+  --radar1:#D7F6EA; --radar2:#9EDCC4; --track:#E9D9C3; --rail:#8A6A4C;
+  --night1:#1B2257; --night2:#2E3A7A; --grass:#2D8A5A; --space:#141A44; --screen:#0E2A2E; --screen-fg:#7CFFCB;
+  --cv-memory:#6A4BD8; --cv-inhibition:#D9473A; --cv-flexibility:#C98A00; --cv-spatial:#0E8F72;
+  --grid:#E3E8F2; --heat1:#DCD2FC; --heat2:#A68DF4; --heat3:#6A4BD8;
+  --shadow:4px 4px 0 var(--outline);
+  --f-display:"Baloo 2","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151B3D; --dots:#1D2550; --surface:#262F66; --sunk:#1C2454;
+  --text:#F3F4FF; --muted:#B4BAE6; --outline:#06081C; --on-color:#1F2340;
+  --accent:#A58BFF; --accent-text:#14183A;
+  --d-memory:#A58BFF; --d-inhibition:#FF7A6E; --d-flexibility:#FFC94D; --d-spatial:#3FE0B8;
+  --good:#4ADE80; --bad:#FF6B6B; --gold:#FFD054;
+  --ink-red:#FF6B6B; --ink-blue:#6EA4FF; --ink-green:#4ADE80; --ink-purple:#C99BFF;
+  --brain:#5B4C93; --brain-line:#7C6BB8; --glass:#3A4680; --label:#1B2147;
+  --radar1:#123548; --radar2:#1E6170; --track:#3B3358; --rail:#9C86C9;
+  --cv-memory:#8A70EE; --cv-inhibition:#EF5F55; --cv-flexibility:#BD8A26; --cv-spatial:#22AA8A;
+  --grid:#323C78; --heat1:#3B3F8A; --heat2:#6A58C9; --heat3:#A58BFF;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#151B3D; --dots:#1D2550; --surface:#262F66; --sunk:#1C2454;
+  --text:#F3F4FF; --muted:#B4BAE6; --outline:#06081C; --on-color:#1F2340;
+  --accent:#A58BFF; --accent-text:#14183A;
+  --d-memory:#A58BFF; --d-inhibition:#FF7A6E; --d-flexibility:#FFC94D; --d-spatial:#3FE0B8;
+  --good:#4ADE80; --bad:#FF6B6B; --gold:#FFD054;
+  --ink-red:#FF6B6B; --ink-blue:#6EA4FF; --ink-green:#4ADE80; --ink-purple:#C99BFF;
+  --brain:#5B4C93; --brain-line:#7C6BB8; --glass:#3A4680; --label:#1B2147;
+  --radar1:#123548; --radar2:#1E6170; --track:#3B3358; --rail:#9C86C9;
+  --cv-memory:#8A70EE; --cv-inhibition:#EF5F55; --cv-flexibility:#BD8A26; --cv-spatial:#22AA8A;
+  --grid:#323C78; --heat1:#3B3F8A; --heat2:#6A58C9; --heat3:#A58BFF;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background-color:var(--bg);background-image:radial-gradient(var(--dots) 2px,transparent 2.5px);background-size:26px 26px;
+  color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 48px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3,h4{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.05;font-weight:800}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+kbd{font-family:var(--f-body);font-size:11px;font-weight:800;border:2px solid currentColor;border-radius:6px;padding:0 5px;opacity:.55;margin-left:8px}
+.sticker{background:var(--surface);border:3px solid var(--outline);border-radius:22px;box-shadow:var(--shadow)}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.mascot{width:86px;height:auto;flex:none;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(-2deg)}}
+.brand h1{font-size:clamp(40px,7vw,56px);letter-spacing:-.01em;color:var(--text);
+  text-shadow:3px 3px 0 var(--d-memory)}
+.speech{position:relative;padding:8px 14px;font-weight:700;font-size:15px;max-width:34ch;border-radius:16px}
+.speech::before{content:"";position:absolute;left:-11px;top:50%;width:14px;height:14px;background:var(--surface);border-left:3px solid var(--outline);border-bottom:3px solid var(--outline);transform:translateY(-50%) rotate(45deg)}
+.hud{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pill{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-weight:800}
+.pill b{font-family:var(--f-display);font-size:22px;line-height:1}
+.pill span{font-size:13px;color:var(--muted)}
+.sound-btn{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;font-weight:800;background:var(--surface);border:3px solid var(--outline);box-shadow:3px 3px 0 var(--outline)}
+.sound-btn svg{width:20px;height:20px}
+.sound-btn[aria-pressed="true"]{background:var(--gold);color:var(--on-color)}
+.sound-btn:active,.btn:active,.choice:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--outline)}
+
+/* home */
+.bench{display:grid;grid-template-columns:1.1fr 1fr;gap:22px}
+@media (max-width:840px){.bench{grid-template-columns:1fr}}
+.panel{padding:20px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.panel-head h2{font-size:26px}
+.tag{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--sunk);border:2px solid var(--outline)}
+.brain svg{width:100%;height:auto;display:block}
+.node-label{font-family:var(--f-display);font-weight:800;font-size:15px;fill:var(--text);paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+.legend{display:flex;flex-direction:column;gap:10px}
+.leg{display:grid;grid-template-columns:16px 1fr auto;gap:4px 10px;align-items:center}
+.leg .dot{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--outline)}
+.leg-name{font-weight:800}
+.leg-name small{font-weight:400;color:var(--muted);margin-left:6px;font-size:13px}
+.leg-lv{font-weight:800;font-size:13px;color:var(--muted)}
+.bar{grid-column:2 / 4;height:12px;background:var(--sunk);border:2.5px solid var(--outline);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;transition:width .8s ease}
+.fine{font-size:13px;color:var(--muted)}
+
+.today{display:flex;flex-direction:column;gap:14px}
+.task{display:grid;grid-template-columns:64px 1fr auto;gap:2px 14px;align-items:center;padding:12px 14px;border-radius:18px;background:var(--sunk);border:3px solid var(--outline)}
+.task .ic{grid-row:1 / 3;width:64px;height:64px;border-radius:16px;background:var(--c);border:3px solid var(--outline);display:grid;place-items:center}
+.task .ic svg{width:48px;height:48px}
+.role{font-size:12px;letter-spacing:.07em;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.role i{font-style:normal;display:inline-block;padding:0 8px;border-radius:999px;background:var(--c);color:var(--on-color);border:2px solid var(--outline);margin-right:6px}
+.task h3{font-size:22px}
+.task .why{grid-column:2 / 4;font-size:14px;color:var(--muted)}
+.task.done{opacity:.6}
+.btn{background:var(--accent);color:var(--accent-text);border:3px solid var(--outline);border-radius:999px;padding:8px 20px;font-weight:800;box-shadow:3px 3px 0 var(--outline);white-space:nowrap;font-family:var(--f-display);font-size:18px}
+.btn.alt{background:var(--surface);color:var(--text)}
+.btn.small{font-size:14px;padding:5px 14px;font-family:var(--f-body)}
+.btn.warn{background:var(--bad);color:#fff}
+.done-mark{font-family:var(--f-display);font-weight:800;color:var(--good);font-size:18px}
+.complete{padding:12px 16px;border-radius:18px;background:var(--gold);color:var(--on-color);border:3px solid var(--outline);font-weight:700}
+
+.shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+#lab{grid-template-columns:repeat(2,1fr)}
+@media (max-width:900px){.shelf{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:440px){.shelf,#lab{grid-template-columns:1fr}}
+.card{display:flex;flex-direction:column;gap:6px;padding:0;text-align:left;min-width:0;overflow:hidden;transition:transform .15s}
+.card:hover{transform:translateY(-3px) rotate(-.5deg)}
+.card .art{background:var(--c);border-bottom:3px solid var(--outline);display:grid;place-items:center;padding:12px}
+.card .art svg{width:72px;height:72px}
+.card .body{padding:10px 14px 14px;display:flex;flex-direction:column;gap:4px}
+.card h3{font-size:22px}
+.card p{font-size:14px;color:var(--muted)}
+.card .meta{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+.honest{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:20px}
+@media (max-width:840px){.honest{grid-template-columns:1fr}}
+.honest h3{font-size:19px;margin-bottom:4px}
+.honest p{font-size:14px;color:var(--muted);max-width:62ch}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+/* play */
+.play{display:flex;flex-direction:column;gap:14px;max-width:760px;margin:0 auto;width:100%}
+.play-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.play-head h2{font-size:28px}
+.play-hud{display:flex;gap:8px;align-items:center}
+.combo{background:var(--gold);color:var(--on-color);border:3px solid var(--outline);border-radius:999px;padding:2px 12px;font-family:var(--f-display);font-weight:800}
+.combo.pop{animation:pop .35s ease}
+@keyframes pop{40%{transform:scale(1.35) rotate(-6deg)}}
+.prog{height:16px;background:var(--surface);border:3px solid var(--outline);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--c,var(--accent));width:0;transition:width .25s}
+.stage{position:relative;overflow:hidden;padding:22px 18px;min-height:460px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+.intro{display:flex;flex-direction:column;gap:12px;max-width:54ch;text-align:left;align-items:flex-start}
+.intro .art{width:96px;height:96px;border-radius:24px;background:var(--c);border:3px solid var(--outline);display:grid;place-items:center;box-shadow:var(--shadow)}
+.intro .art svg{width:72px;height:72px}
+.intro h3{font-size:34px}
+.intro ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips span{font-size:13px;font-weight:800;background:var(--sunk);border:2px solid var(--outline);padding:2px 10px;border-radius:999px}
+.cue{color:var(--muted);font-weight:700}
+.countdown{font-family:var(--f-display);font-size:110px;font-weight:800;color:var(--c);-webkit-text-stroke:3px var(--outline);animation:pop .5s ease}
+.choice{border:3px solid var(--outline);background:var(--surface);border-radius:18px;padding:14px 10px;font-weight:800;font-size:18px;box-shadow:3px 3px 0 var(--outline);font-family:var(--f-display);min-width:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:480px}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:440px}
+.grid4 .choice{display:flex;align-items:center;justify-content:center;gap:10px}
+.blob{width:22px;height:22px;border-radius:50% 50% 45% 55%;border:2.5px solid var(--outline)}
+.one{min-width:220px}
+
+/* feedback */
+.ok{animation:okpulse .35s ease}
+@keyframes okpulse{40%{transform:scale(1.06)}}
+.bad-shake{animation:shake .35s ease}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.spark{position:absolute;width:12px;height:12px;border-radius:50%;border:2px solid var(--outline);pointer-events:none;animation:spark .7s ease-out forwards}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}}
+.float-pts{position:absolute;font-family:var(--f-display);font-weight:800;font-size:22px;color:var(--text);pointer-events:none;animation:rise .8s ease-out forwards;paint-order:stroke;-webkit-text-stroke:0}
+@keyframes rise{to{transform:translateY(-50px);opacity:0}}
+
+/* Control Tower */
+.radar{position:relative;width:min(300px,76vw);aspect-ratio:1;max-width:100%;border-radius:50%;border:4px solid var(--outline);box-shadow:var(--shadow);overflow:hidden;
+  background:radial-gradient(circle,var(--radar1) 0 29%,var(--radar2) 29.5% 31%,var(--radar1) 31.5% 59%,var(--radar2) 59.5% 61%,var(--radar1) 61.5%)}
+.sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 290deg,color-mix(in srgb,var(--d-spatial) 55%,transparent) 360deg);animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.plane{position:absolute;left:50%;top:50%;width:62%;transform:translate(-50%,-50%);animation:flyin .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes flyin{from{transform:translate(60%,-90%) scale(.4) rotate(20deg);opacity:0}}
+.plane svg{width:100%;height:auto;display:block}
+.callsign{font-family:var(--f-display);font-weight:800;font-size:44px}
+
+/* Night Shift */
+.monitor{width:min(340px,84vw);max-width:100%;border:4px solid var(--outline);border-radius:26px;background:var(--surface);padding:12px;box-shadow:var(--shadow)}
+.screen{background:var(--screen);border:3px solid var(--outline);border-radius:16px;height:220px;position:relative;overflow:hidden;display:grid;place-items:center}
+.ecg{position:absolute;left:0;right:0;bottom:12px;height:40px;width:200%;animation:ecg 2.4s linear infinite}
+@keyframes ecg{to{transform:translateX(-50%)}}
+.ecg path{fill:none;stroke:var(--screen-fg);stroke-width:2.5;opacity:.6}
+.sym{width:120px;height:120px;position:relative}
+.sym svg{width:100%;height:100%;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--screen-fg) 70%,transparent))}
+.sym path{fill:var(--screen-fg)}
+.sym.pop{animation:pop .3s ease}
+.monitor-foot{display:flex;justify-content:space-between;align-items:center;padding:8px 4px 0;font-weight:800;font-size:13px;color:var(--muted)}
+.led{width:12px;height:12px;border-radius:50%;background:var(--good);border:2px solid var(--outline);display:inline-block;margin-right:6px;vertical-align:-1px}
+
+/* Potion Shop */
+.bottle{width:min(220px,58vw);height:auto;max-width:100%}
+.bottle .wobble{transform-origin:100px 200px;animation:wob .5s ease}
+@keyframes wob{30%{transform:rotate(-6deg)}60%{transform:rotate(4deg)}}
+.bubble{animation:bub 1.6s ease-in infinite}
+@keyframes bub{from{transform:translateY(0);opacity:.9}to{transform:translateY(-50px);opacity:0}}
+.potion-word{font-family:var(--f-display);font-weight:800;font-size:34px}
+
+/* Firefly Catch */
+.meadow{position:relative;width:100%;max-width:540px;aspect-ratio:4/3;border:4px solid var(--outline);border-radius:24px;overflow:hidden;box-shadow:var(--shadow);touch-action:manipulation;
+  background:radial-gradient(circle at 15% 20%,#fff8 1.5px,transparent 2px),radial-gradient(circle at 70% 12%,#fff8 1.5px,transparent 2px),radial-gradient(circle at 85% 35%,#fff6 1px,transparent 2px),radial-gradient(circle at 40% 30%,#fff6 1px,transparent 2px),linear-gradient(var(--night1),var(--night2));cursor:pointer}
+.meadow::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-8%;height:26%;background:radial-gradient(ellipse at 10% 0,var(--grass) 30%,transparent 31%) 0 0/18% 60% repeat-x,var(--grass);border-top:3px solid var(--outline);border-radius:40% 40% 0 0}
+.critter{position:absolute;width:22%;aspect-ratio:1;z-index:1;animation:appear .18s ease-out;pointer-events:none}
+.critter svg{width:100%;height:100%;overflow:visible}
+@keyframes appear{from{transform:scale(.2);opacity:0}}
+.critter.gone{transition:transform .25s,opacity .25s;transform:scale(.3);opacity:0}
+.critter.caught{transition:transform .25s,opacity .25s;transform:scale(1.5);opacity:0}
+
+/* Term Lab meanings toggle */
+.lab-top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;width:100%;max-width:560px;text-align:left}
+.lab-top .fine{flex:1;min-width:180px}
+#meanBtn[aria-pressed="true"]{background:var(--gold);color:var(--on-color)}
+.termwrap{display:flex;flex-direction:column;gap:14px;width:100%;align-items:center}
+.hide-means .wtile span{display:none}
+.hide-means .wtile{padding:12px 6px}
+
+/* Did you know? pop-up and Daily facts */
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--outline) 55%,transparent)}
+.modal-card{width:100%;max-width:460px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:12px;animation:pop .45s ease;position:relative}
+.modal-card .bulb{position:absolute;top:-34px;left:50%;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;background:var(--gold);border:3px solid var(--outline);display:grid;place-items:center;box-shadow:3px 3px 0 var(--outline)}
+.modal-card .bulb svg{width:44px;height:44px}
+.modal-card h2{font-size:32px;text-align:center;margin-top:24px}
+.fact-text{font-size:18px;font-weight:700;line-height:1.45}
+.fact-src{font-size:13px;color:var(--muted)}
+.modal-card .actions{justify-content:center}
+.factlist{display:flex;flex-direction:column;gap:14px}
+.factcard{padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.factcard.today{background:var(--gold);color:var(--on-color)}
+.factcard.today .fact-src,.factcard.today .role{color:var(--on-color)}
+
+/* game meters and rewards */
+.meter-row{display:flex;align-items:center;gap:10px;width:100%;max-width:420px;font-weight:800;font-size:14px}
+.meter-row > span:first-child{color:var(--muted);white-space:nowrap}
+.meter-row b{font-family:var(--f-display);font-size:18px;min-width:2.5em;text-align:right}
+.mbar{flex:1;height:14px;border:2.5px solid var(--outline);border-radius:999px;background:var(--sunk);overflow:hidden}
+.mbar i{display:block;height:100%;transition:width .3s ease,background .3s}
+.monitor .meter-row{max-width:none;padding:6px 4px 0}
+.bonus-pts{font-size:20px;white-space:nowrap;transform:translateX(-50%);background:var(--gold);color:var(--on-color);border:2.5px solid var(--outline);border-radius:999px;padding:0 10px;animation:risebig 1.3s ease-out forwards}
+@keyframes risebig{0%{transform:translate(-50%,0) scale(.6)}20%{transform:translate(-50%,-10px) scale(1.1)}100%{transform:translate(-50%,-70px);opacity:0}}
+.stamp{position:absolute;right:-6%;top:-14%;font-family:var(--f-display);font-weight:800;font-size:15px;color:#fff;background:var(--good);border:2.5px solid var(--outline);border-radius:8px;padding:0 8px;transform:rotate(12deg);animation:pop .3s ease}
+.radar.alarm{box-shadow:0 0 0 6px var(--bad),var(--shadow)}
+.alarm-text{position:absolute;left:0;right:0;bottom:16%;text-align:center;font-family:var(--f-display);font-weight:800;font-size:22px;color:var(--bad);-webkit-text-stroke:1px var(--outline);pointer-events:none}
+.critter.gold svg{filter:drop-shadow(0 0 14px #FFC21A)}
+.station{display:flex;flex-wrap:wrap;gap:3px;flex:1;min-height:16px}
+.station i{width:14px;height:14px;border-radius:4px;background:var(--d-spatial);border:2px solid var(--outline);animation:pop .3s ease}
+.space svg.docking{transition:transform .4s ease-in,opacity .4s;transform:translateX(-45%) scale(.85);opacity:0}
+.space svg.reject{transition:transform .4s ease-in,opacity .4s;transform:translateY(-60%) rotate(25deg);opacity:0}
+.zap{stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:60;stroke-dashoffset:60;animation:zap .35s ease-out forwards;filter:drop-shadow(0 0 2px var(--gold))}
+@keyframes zap{to{stroke-dashoffset:0}}
+.tissue.glow .webl{stroke:var(--gold);opacity:1;transition:stroke .2s}
+.tissue.glow .soma{fill:var(--gold)}
+
+/* Creature Keeper */
+.motel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;width:100%;max-width:560px;align-items:stretch}
+@media (max-width:480px){.motel{grid-template-columns:1fr}}
+.room{position:relative;border:3px solid var(--outline);border-radius:18px;background:linear-gradient(var(--sunk) 78%,var(--track) 78%);min-height:190px;display:grid;place-items:end center;padding:8px;box-shadow:var(--shadow);overflow:hidden}
+.room svg{width:150px;height:auto;display:block;position:relative;z-index:1;animation:appear .2s ease-out}
+.door{position:absolute;right:12px;bottom:22%;width:46px;height:104px;border:3px dashed var(--outline);border-bottom:0;border-radius:24px 24px 0 0;opacity:.35}
+.rulecard{border:3px solid var(--outline);border-radius:18px;background:var(--surface);padding:8px;display:flex;flex-direction:column;gap:6px;justify-content:center;box-shadow:var(--shadow)}
+.rrow{display:grid;grid-template-columns:72px 1fr 1fr;gap:6px;align-items:center;padding:6px 8px;border-radius:12px;border:2.5px solid transparent;font-size:14px;text-align:left;transition:background .15s}
+.rrow b{font-family:var(--f-display)}
+.rrow span{font-weight:700;color:var(--muted)}
+.rrow span:last-child{text-align:right}
+.rrow.on{background:var(--gold);border-color:var(--outline);color:var(--on-color)}
+.rrow.on span{color:var(--on-color)}
+
+/* Space Dock */
+.dock-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:500px}
+.space{margin:0;background:radial-gradient(circle at 20% 30%,#fff9 1.2px,transparent 2px),radial-gradient(circle at 75% 20%,#fff7 1px,transparent 2px),radial-gradient(circle at 60% 80%,#fff8 1.2px,transparent 2px),radial-gradient(circle at 30% 75%,#fff6 1px,transparent 2px),var(--space);
+  border:3px solid var(--outline);border-radius:18px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:var(--shadow)}
+.space svg{width:100%;height:auto;max-width:210px}
+.space figcaption{font-size:13px;font-weight:800;color:#DDE3FF}
+.hull{fill:var(--d-spatial);stroke:var(--outline);stroke-width:2.5}
+.port{fill:color-mix(in srgb,var(--d-spatial) 22%,transparent);stroke:#DDE3FF;stroke-width:2;stroke-dasharray:4 3}
+.window{fill:#DDF7FF;stroke:var(--outline);stroke-width:1.5}
+
+/* results */
+.result{width:100%;display:flex;flex-direction:column;gap:18px;text-align:left}
+.res-top{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px}
+.stars{display:flex;gap:6px}
+.stars svg{width:48px;height:48px}
+.stars svg.on{animation:pop .4s ease backwards}
+.big{font-family:var(--f-display);font-size:56px;font-weight:800;line-height:1}
+.lvl{font-weight:800;padding:6px 14px;border-radius:999px;border:3px solid var(--outline);background:var(--sunk)}
+.lvl.up{background:var(--good);color:#fff}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.kv div{background:var(--sunk);border:2.5px solid var(--outline);border-radius:14px;padding:8px 12px}
+.kv span{display:block;font-size:12px;color:var(--muted);font-weight:700}
+.kv b{font-family:var(--f-display);font-size:22px;font-variant-numeric:tabular-nums}
+.insight{font-size:17px;max-width:64ch;font-weight:700}
+.science{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:580px){.science{grid-template-columns:1fr}}
+.science div{border-top:3px dotted var(--outline);padding-top:10px}
+.science h4{font-size:17px;margin-bottom:4px}
+.science p{font-size:14px;max-width:62ch}
+.cite{font-size:12px;color:var(--muted);margin-top:4px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Shape Shifter Sort */
+.piles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:480px}
+.pile{border:3px solid var(--outline);background:var(--surface);border-radius:14px;padding:6px;box-shadow:3px 3px 0 var(--outline);min-width:0}
+.pile svg,.newcard svg{width:100%;height:auto;display:block}
+.pile:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--outline)}
+.newcard{width:min(130px,34vw);border:3px solid var(--outline);border-radius:16px;background:var(--surface);padding:6px;box-shadow:var(--shadow);animation:dealin .3s ease}
+@keyframes dealin{from{transform:translateY(-30px) rotate(-8deg);opacity:0}}
+.verdict{font-family:var(--f-display);font-weight:800;font-size:22px;min-height:1.3em}
+.verdict.good{color:var(--good)} .verdict.bad{color:var(--bad)}
+.hint{font-size:14px;font-weight:800;color:var(--muted);min-height:1.4em}
+
+/* Neuron Trail */
+.tissue{position:relative;width:min(380px,86vw);aspect-ratio:1;max-width:100%;border:4px solid var(--outline);border-radius:26px;box-shadow:var(--shadow);overflow:hidden;
+  background:radial-gradient(circle at 30% 30%,#3B2F6E 0,transparent 55%),radial-gradient(circle at 75% 70%,#24406E 0,transparent 55%),#1A1F45}
+.tissue svg.web{position:absolute;inset:0;width:100%;height:100%}
+.nrn{position:absolute;width:19%;aspect-ratio:1;transform:translate(-50%,-50%);border:0;background:transparent;padding:0;border-radius:50%}
+.nrn svg{width:100%;height:100%;overflow:visible}
+.nrn .soma{fill:#4B4F8F;stroke:#06081C;stroke-width:4;transition:fill .12s}
+.nrn.lit .soma{fill:var(--gold)}
+.nrn.lit svg{filter:drop-shadow(0 0 12px var(--gold))}
+.nrn.wrong .soma{fill:var(--bad)}
+.nrn:disabled{cursor:default}
+.trail-status{font-family:var(--f-display);font-weight:800;font-size:20px;min-height:1.3em}
+
+/* Puzzle Lab */
+.play.wide{max-width:1060px}
+.xwrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;width:100%;text-align:left;align-items:start}
+@media (max-width:780px){.xwrap{grid-template-columns:1fr}}
+.xbanner{background:var(--sunk);border:3px solid var(--outline);border-radius:14px;padding:8px 12px;font-weight:700;min-height:2.8em;margin-bottom:12px}
+.xbanner b{font-family:var(--f-display)}
+.xgrid{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:2px;width:min(100%,calc(var(--cols) * 42px));margin:0 auto}
+.xcell{position:relative;aspect-ratio:1;display:block}
+.xblk{aspect-ratio:1;background:var(--outline);border-radius:5px}
+@media (min-width:781px){.clues{max-height:620px;overflow-y:auto;padding-right:6px}}
+.xcell input{width:100%;height:100%;border:2.5px solid var(--outline);border-radius:7px;background:var(--surface);color:var(--text);text-align:center;text-transform:uppercase;
+  font-family:var(--f-display);font-weight:800;font-size:clamp(13px,3.6vw,21px);padding:8px 0 0;caret-color:transparent;outline:none}
+.xcell.inword input{background:color-mix(in srgb,var(--gold) 35%,var(--surface))}
+.xcell.cur input{background:var(--gold);color:var(--on-color)}
+.xcell.wrong input{background:color-mix(in srgb,var(--bad) 30%,var(--surface))}
+.xcell.revealed input{color:var(--accent)}
+.xn{position:absolute;left:3px;top:1px;font-size:9px;font-weight:800;pointer-events:none;color:var(--muted)}
+.xcell.cur .xn{color:var(--on-color)}
+.clues{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:420px){.clues{grid-template-columns:1fr}}
+.clues h4{font-size:18px;margin-bottom:4px}
+.clues ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.clues button{border:0;background:transparent;text-align:left;padding:4px 6px;border-radius:8px;font-size:14px;width:100%}
+.clues button:hover{background:var(--sunk)}
+.clues button.on{background:var(--gold);color:var(--on-color)}
+.clues button.solved{color:var(--muted);text-decoration:line-through}
+.xtools{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.deftext{font-family:var(--f-display);font-weight:800;font-size:clamp(22px,4.5vw,30px);max-width:24ch}
+.tilerow{display:flex;flex-direction:column;gap:6px;width:100%;max-width:560px;text-align:left}
+.tilerow .role{font-size:12px}
+.tiles4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:480px){.tiles4{grid-template-columns:repeat(2,1fr)}}
+.wtile{border:3px solid var(--outline);background:var(--surface);border-radius:14px;padding:8px 6px;box-shadow:3px 3px 0 var(--outline);display:flex;flex-direction:column;align-items:center;min-width:0}
+.wtile b{font-family:var(--f-display);font-size:19px;line-height:1.1}
+.wtile span{font-size:12px;color:var(--muted);font-weight:700}
+.wtile.sel{background:var(--gold);color:var(--on-color)}
+.wtile.sel span{color:var(--on-color)}
+.built{font-family:var(--f-display);font-weight:800;font-size:22px;min-height:1.4em}
+.explain{max-width:56ch;font-weight:700;min-height:3em}
+.learned{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.learned div{background:var(--sunk);border:2.5px solid var(--outline);border-radius:12px;padding:8px 10px;font-size:14px}
+.learned b{font-family:var(--f-display);display:block}
+.lab-badge{align-self:flex-start;font-size:12px;font-weight:800;padding:1px 9px;border-radius:999px;border:2px solid var(--outline);background:var(--gold);color:var(--on-color)}
+
+/* nav */
+.tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:3px solid var(--outline);box-shadow:3px 3px 0 var(--outline)}
+.tabs button{border:0;background:transparent;border-radius:999px;padding:5px 14px;font-weight:800}
+.tabs button[aria-current="page"]{background:var(--accent);color:var(--accent-text)}
+
+/* progress */
+.ptitle{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
+.ptitle h2{font-size:clamp(30px,5vw,40px)}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media (max-width:840px){.tiles{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:480px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{padding:12px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile span{font-size:13px;color:var(--muted);font-weight:700}
+.tile b{font-family:var(--f-display);font-size:34px;line-height:1.1}
+.tile small{font-size:12px;color:var(--muted)}
+.cal-wrap{overflow-x:auto;padding-bottom:4px}
+.cal{display:grid;grid-template-rows:16px repeat(7,16px);grid-template-columns:30px;grid-auto-flow:column;grid-auto-columns:16px;gap:4px;width:max-content}
+.cal .dl{font-size:11px;color:var(--muted);font-weight:700;line-height:16px}
+.cal .ml{font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap;line-height:16px;overflow:visible}
+.cal .c{width:16px;height:16px;border-radius:4px;background:var(--sunk);border:1.5px solid var(--grid);cursor:default}
+.cal .c[data-n="1"]{background:var(--heat1);border-color:var(--heat1)}
+.cal .c[data-n="2"]{background:var(--heat2);border-color:var(--heat2)}
+.cal .c[data-n="3"]{background:var(--heat3);border-color:var(--heat3)}
+.cal .c.today{outline:2px solid var(--outline);outline-offset:1px}
+.cal .c:hover,.cal .c:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.heat-key{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:700}
+.heat-key i{width:14px;height:14px;border-radius:4px;display:inline-block;background:var(--sunk);border:1.5px solid var(--grid)}
+.multiples{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media (max-width:760px){.multiples{grid-template-columns:1fr}}
+.gcard{border:3px solid var(--outline);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface);min-width:0}
+.ghead{display:flex;align-items:center;gap:10px}
+.ghead .ic{width:40px;height:40px;border-radius:12px;background:var(--c);border:2.5px solid var(--outline);display:grid;place-items:center;flex:none}
+.ghead .ic svg{width:30px;height:30px}
+.ghead h3{font-size:20px}
+.ghead small{display:block;font-size:12px;color:var(--muted);font-weight:700}
+.lc{position:relative;min-height:150px}
+.lc svg{display:block;width:100%;height:150px;overflow:visible}
+.lc svg:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:6px}
+.ax{font-family:var(--f-body);font-size:11px;fill:var(--muted);font-weight:700}
+.endlab{font-family:var(--f-body);font-size:12px;fill:var(--text);font-weight:800}
+.empty{color:var(--muted);font-size:14px;padding:30px 8px;text-align:center;border:2px dashed var(--grid);border-radius:12px}
+.measure{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;border-top:2px dotted var(--grid);padding-top:10px}
+.measure .ml2{font-size:12px;color:var(--muted);font-weight:700}
+.measure .mv{font-weight:800;font-size:15px}
+.measure svg{grid-row:1 / 3;grid-column:2;width:120px;height:34px;overflow:visible}
+@media (max-width:440px){.measure{grid-template-columns:1fr}.measure svg{grid-row:auto;grid-column:1}}
+.delta{font-size:12px;font-weight:800;padding:1px 8px;border-radius:999px;border:2px solid currentColor;margin-left:6px;white-space:nowrap}
+.delta.good{color:var(--good)} .delta.badd{color:var(--bad)} .delta.flat{color:var(--muted)}
+.prs{display:flex;flex-wrap:wrap;gap:6px}
+.prs span{font-size:12px;font-weight:800;background:var(--sunk);border:2px solid var(--grid);border-radius:999px;padding:1px 9px}
+details summary{cursor:pointer;font-family:var(--f-display);font-weight:800;font-size:22px}
+.table-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.table-wrap{overflow-x:auto;max-height:420px;overflow-y:auto;border:2px solid var(--grid);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 10px;text-align:left;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{position:sticky;top:0;background:var(--sunk);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+#csvBox{width:100%;height:120px;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--sunk);color:var(--text);border:2px solid var(--grid);border-radius:10px}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--surface);color:var(--text);border:2.5px solid var(--outline);border-radius:12px;padding:8px 10px;box-shadow:3px 3px 0 var(--outline);font-size:13px;max-width:240px}
+.tip b{font-family:var(--f-display);font-size:18px;display:block;line-height:1.1}
+.tip span{color:var(--muted);display:block}
+
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg class="mascot" viewBox="0 0 120 112" aria-hidden="true">
+        <g stroke="var(--outline)" stroke-width="5" stroke-linecap="round" fill="none">
+          <path d="M32 48 L12 34 M12 34 L6 22 M12 34 L2 40"/>
+          <path d="M88 48 L108 36 M108 36 L114 24 M108 36 L118 44"/>
+          <path d="M48 30 L42 10 M42 10 L32 6 M42 10 L46 2"/>
+          <path d="M74 30 L82 10 M82 10 L92 8 M82 10 L78 2"/>
+          <path d="M60 88 L60 104 M60 104 L50 110 M60 104 L70 110"/>
+        </g>
+        <ellipse cx="60" cy="58" rx="34" ry="31" fill="var(--d-memory)" stroke="var(--outline)" stroke-width="4"/>
+        <ellipse cx="48" cy="44" rx="8" ry="5" fill="#fff" opacity=".45"/>
+        <circle cx="47" cy="58" r="8" fill="#fff" stroke="var(--outline)" stroke-width="3"/>
+        <circle cx="73" cy="58" r="8" fill="#fff" stroke="var(--outline)" stroke-width="3"/>
+        <circle cx="49" cy="60" r="3.5" fill="#1F2340"/><circle cx="75" cy="60" r="3.5" fill="#1F2340"/>
+        <circle cx="38" cy="71" r="5" fill="#FF8FB1" opacity=".8"/><circle cx="82" cy="71" r="5" fill="#FF8FB1" opacity=".8"/>
+        <path d="M52 74 Q60 82 68 74" stroke="var(--outline)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <g id="acc"></g>
+      </svg>
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <h1>Rewire</h1>
+        <p class="speech sticker" id="speech">Hi! I'm Neuri. Train a little every day and watch your circuits light up.</p>
+      </div>
+    </div>
+    <div class="hud">
+      <nav class="tabs" aria-label="Views"><button data-nav="home">Today</button><button data-nav="progress">Progress</button><button data-nav="facts">Facts</button></nav>
+      <div class="pill sticker"><b class="num" id="sStreak">0</b><span>day streak</span></div>
+      <div class="pill sticker"><b class="num" id="sStars">0</b><span>stars</span></div>
+      <button class="sound-btn" id="soundBtn" aria-pressed="false"></button>
+    </div>
+  </header>
+
+  <main id="home">
+    <div class="wrap">
+      <div class="bench">
+        <section class="panel sticker brain" aria-labelledby="mapTitle">
+          <div class="panel-head">
+            <h2 id="mapTitle">Your circuit map</h2>
+            <span class="tag" id="sampleBadge" hidden>Sample data</span>
+          </div>
+          <svg viewBox="0 0 400 300" role="img" aria-label="Cartoon brain with four training regions that glow brighter with practice">
+            <defs><filter id="blur" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10"/></filter></defs>
+            <g stroke="var(--outline)" stroke-width="4" stroke-linejoin="round">
+              <path fill="var(--brain)" d="M252 222 C254 245 250 262 246 290 L272 290 C274 262 276 244 280 224 Z"/>
+              <ellipse fill="var(--brain)" cx="302" cy="224" rx="46" ry="26"/>
+              <path fill="var(--brain)" d="M64 168 C44 116 78 56 150 40 C212 26 294 36 336 80 C370 112 374 162 350 192 C334 212 304 216 284 212 C272 234 248 246 222 242 C204 240 192 230 182 222 C150 230 108 226 86 210 C72 200 66 184 64 168 Z"/>
+            </g>
+            <g fill="none" stroke="var(--brain-line)" stroke-width="4" stroke-linecap="round">
+              <path d="M232 44 C222 90 214 140 206 214"/><path d="M110 186 C150 172 210 166 270 150"/>
+              <path d="M150 58 C140 90 132 120 130 150"/><path d="M292 70 C280 100 286 130 302 160"/>
+              <path d="M180 60 C175 80 182 96 176 116"/><path d="M276 214 C290 220 312 222 330 216"/>
+            </g>
+            <g id="links"></g><g id="nodes"></g>
+          </svg>
+          <div class="legend" id="legend"></div>
+          <p class="fine">Glow shows how recently and how well you've trained each circuit. Skip a circuit and its glow halves in about a week.</p>
+        </section>
+
+        <section class="panel sticker" aria-labelledby="todayTitle">
+          <div class="panel-head">
+            <h2 id="todayTitle">Today's circuit</h2>
+            <span class="tag" id="dateLabel"></span>
+          </div>
+          <div class="today" id="today"></div>
+        </section>
+      </div>
+
+      <section class="panel sticker" aria-labelledby="shelfTitle">
+        <div class="panel-head">
+          <h2 id="shelfTitle">Game shelf</h2>
+          <span class="fine">Play anything, any time. Every game feeds its circuit.</span>
+        </div>
+        <div class="shelf" id="shelf"></div>
+      </section>
+
+      <section class="panel sticker" aria-labelledby="labTitle">
+        <div class="panel-head">
+          <h2 id="labTitle">Puzzle Lab</h2>
+          <span class="fine">Slower word puzzles for future doctors. They build medical vocabulary and don't change your circuit map.</span>
+        </div>
+        <div class="shelf" id="lab"></div>
+      </section>
+
+      <footer class="honest sticker">
+        <div>
+          <h3>What's real</h3>
+          <p>You will get better at these games with practice. That improvement is genuine neuroplasticity: repeated use strengthens the circuits a task depends on.</p>
+        </div>
+        <div>
+          <h3>What's uncertain</h3>
+          <p>Evidence that brain-game gains carry over to everyday thinking is limited. In 2014, about 70 scientists signed a consensus statement saying so. Rewire teaches the science; it makes no promise to raise IQ.</p>
+        </div>
+        <div>
+          <h3>What it isn't</h3>
+          <p>The map models your practice, not your brain, and Rewire is not a diagnostic tool. Progress is saved only in this browser.</p>
+          <div class="tools">
+            <button class="btn alt small" id="sampleBtn">Load a sample week</button>
+            <button class="btn alt small" id="resetBtn">Reset progress</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </main>
+
+  <section id="progress" hidden>
+    <div class="wrap">
+      <div class="ptitle">
+        <h2>Your progress</h2>
+        <span class="tag" id="pSample" hidden>Sample data</span>
+      </div>
+      <div class="tiles" id="pTiles"></div>
+
+      <section class="panel sticker" aria-labelledby="calTitle">
+        <div class="panel-head">
+          <h2 id="calTitle">Practice calendar</h2>
+          <div class="heat-key" aria-hidden="true">None <i></i><i style="background:var(--heat1);border-color:var(--heat1)"></i><i style="background:var(--heat2);border-color:var(--heat2)"></i><i style="background:var(--heat3);border-color:var(--heat3)"></i> 3+ sessions</div>
+        </div>
+        <div class="cal-wrap"><div class="cal" id="pCal"></div></div>
+        <p class="fine">The last 16 weeks. Use it or lose it: steady practice beats occasional cramming.</p>
+      </section>
+
+      <section class="panel sticker" aria-labelledby="lvTitle">
+        <div class="panel-head">
+          <h2 id="lvTitle">Level by game</h2>
+          <span class="fine">Each line is the level you played at, session by session. A rising line is plasticity you can see.</span>
+        </div>
+        <div class="multiples" id="pGames"></div>
+      </section>
+
+      <section class="panel sticker">
+        <details id="pDetails">
+          <summary>Every session as a table</summary>
+          <div class="table-tools">
+            <button class="btn alt small" id="csvBtn">Copy as CSV</button>
+            <span class="fine" id="csvMsg">Paste it into a spreadsheet or load it in Python to analyze your own data.</span>
+          </div>
+          <textarea id="csvBox" readonly hidden aria-label="Session data as CSV"></textarea>
+          <div class="table-wrap"><table id="pTable"></table></div>
+        </details>
+      </section>
+    </div>
+  </section>
+
+  <section id="facts" hidden>
+    <div class="wrap" style="max-width:720px">
+      <div class="ptitle"><h2>Daily facts</h2><button class="btn alt small" id="factAgain">Show today's pop-up</button></div>
+      <p class="fine">Today's fact and the four before it, from the days you opened Rewire.</p>
+      <div class="factlist" id="factList"></div>
+    </div>
+  </section>
+
+  <section id="play" class="play" hidden>
+    <div class="play-head">
+      <button class="btn alt small" id="exitBtn">← Leave</button>
+      <h2 id="playTitle"></h2>
+      <div class="play-hud">
+        <span class="combo num" id="comboChip" hidden></span>
+        <span class="pill sticker"><b class="num" id="ptsVal">0</b><span>pts</span></span>
+        <span class="tag num" id="playCount"></span>
+      </div>
+    </div>
+    <div class="prog"><i id="progBar"></i></div>
+    <div class="stage sticker" id="stage"></div>
+  </section>
+</div>
+<div class="tip" id="tip" role="status" hidden></div>
+
+<div class="modal" id="factModal" role="dialog" aria-modal="true" aria-labelledby="factTitle" hidden>
+  <div class="modal-card sticker">
+    <div class="bulb" aria-hidden="true"><svg viewBox="0 0 48 48"><g stroke="#1F2340" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 C14 6 9 13 9 20 C9 27 15 30 16 36 H32 C33 30 39 27 39 20 C39 13 34 6 24 6 Z" fill="#fff"/><path d="M18 41 H30 M20 45 H28" fill="none"/><path d="M24 36 V24 M20 22 L24 26 L28 22" fill="none"/></g></svg></div>
+    <h2 id="factTitle">Did you know?</h2>
+    <p class="fact-text" id="factText"></p>
+    <p class="fact-src" id="factSrc"></p>
+    <div class="actions"><button class="btn" id="factOk">Got it!</button><button class="btn alt" id="factMore">See past facts</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+const KEY = 'rewire.v2', OLD_KEY = 'rewire.v1';
+const DAY = 864e5, HALF_LIFE = 7 * DAY;
+const reduceMotion = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } })();
+
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const rand = n => Math.floor(Math.random() * n);
+const pick = a => a[rand(a.length)];
+const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : NaN;
+const ms = v => isFinite(v) ? Math.round(v) + ' ms' : '–';
+const signed = v => isFinite(v) ? `${v>0?'+':''}${Math.round(v)} ms` : '–';
+const dayKey = (t = Date.now()) => { const d = new Date(t); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+function hashStr(s){ let h = 2166136261; for (const c of s){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function mulberry32(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ================= sound ================= */
+const Sound = {
+  on:false, ctx:null,
+  ensure(){ try { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === 'suspended') this.ctx.resume(); } catch(e){} },
+  tone(f, dur = .12, type = 'sine', vol = .14, when = 0){
+    if (!this.on || !this.ctx) return;
+    try {
+      const t = this.ctx.currentTime + when, o = this.ctx.createOscillator(), g = this.ctx.createGain();
+      o.type = type; o.frequency.setValueAtTime(f, t);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g); g.connect(this.ctx.destination); o.start(t); o.stop(t + dur + .03);
+    } catch(e){}
+  },
+  good(combo){ const b = 523 * Math.pow(2, Math.min(combo, 10) / 12); this.tone(b, .09, 'triangle'); this.tone(b * 1.5, .14, 'triangle', .12, .07); },
+  soft(){ this.tone(660, .08, 'sine', .07); },
+  bad(){ this.tone(196, .16, 'square', .05); this.tone(147, .22, 'square', .045, .09); },
+  tick(){ this.tone(740, .07, 'sine', .09); },
+  go(){ this.tone(1175, .14, 'triangle', .13); },
+  blip(f){ this.tone(f, .16, 'sine', .1); },
+  whoosh(){ this.tone(300, .12, 'sawtooth', .025); this.tone(520, .1, 'sawtooth', .02, .05); },
+  fanfare(){ [523,659,784,1047,1319].forEach((f,i) => this.tone(f, .18, 'triangle', .12, i * .09)); }
+};
+
+/* ================= art ================= */
+const ICONS = {
+  tower:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"><g transform="rotate(-18 32 32)"><path d="M24 30 L34 10 L41 10 L36 30Z" fill="#fff"/><path d="M24 36 L34 56 L41 56 L36 36Z" fill="#fff"/><rect x="6" y="27" width="50" height="12" rx="6" fill="#fff"/><path d="M8 29 L4 18 L11 18 L16 28Z" fill="#fff"/><circle cx="47" cy="33" r="2.5" fill="var(--outline)"/></g></g></svg>`,
+  night:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"><rect x="6" y="10" width="52" height="38" rx="8" fill="#0E2A2E"/><path d="M12 32 H22 L26 22 L31 40 L35 28 L38 32 H52" fill="none" stroke="#7CFFCB"/><rect x="24" y="48" width="16" height="8" fill="#fff"/></g></svg>`,
+  potion:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"><rect x="26" y="4" width="12" height="8" rx="2" fill="#C68B59"/><path d="M27 12 H37 V24 C48 28 54 36 54 44 A22 18 0 0 1 10 44 C10 36 16 28 27 24 Z" fill="#fff"/><path d="M12 42 C20 38 30 46 52 40 A22 16 0 0 1 12 42Z" fill="#9450E0"/><circle cx="26" cy="36" r="3" fill="#fff"/></g></svg>`,
+  firefly:`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="40" r="20" fill="#FFF3A0" opacity=".7"/><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"><ellipse cx="20" cy="22" rx="10" ry="7" fill="#fff"/><ellipse cx="44" cy="22" rx="10" ry="7" fill="#fff"/><ellipse cx="32" cy="38" rx="11" ry="14" fill="#FFE45C"/><circle cx="32" cy="22" r="8" fill="#3A3F6B"/></g><circle cx="29" cy="21" r="2" fill="#fff"/><circle cx="35" cy="21" r="2" fill="#fff"/></svg>`,
+  keeper:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 50 V58 M42 50 V58 M24 14 L20 6 M40 14 L44 6"/><ellipse cx="32" cy="34" rx="22" ry="20" fill="#FF8FB8"/><circle cx="24" cy="30" r="5" fill="#fff"/><circle cx="40" cy="30" r="5" fill="#fff"/></g><circle cx="25" cy="31" r="2" fill="#1F2340"/><circle cx="41" cy="31" r="2" fill="#1F2340"/><circle cx="20" cy="44" r="3" fill="#D4558A"/><circle cx="44" cy="42" r="3" fill="#D4558A"/></svg>`,
+  dock:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"><path d="M32 4 C44 14 46 30 42 44 H22 C18 30 20 14 32 4Z" fill="#fff"/><circle cx="32" cy="24" r="6" fill="#BDE3FF"/><path d="M22 34 L10 48 L22 46Z" fill="#FF6B5C"/><path d="M42 34 L54 48 L42 46Z" fill="#FF6B5C"/><path d="M26 44 L32 58 L38 44Z" fill="#FFC93C"/></g></svg>`
+};
+Object.assign(ICONS, {
+  sort:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"><rect x="6" y="14" width="26" height="36" rx="5" fill="#fff" transform="rotate(-12 19 32)"/><rect x="32" y="14" width="26" height="36" rx="5" fill="#fff" transform="rotate(10 45 32)"/><path d="M19 24 L26 36 H12Z" fill="#E5484D" transform="rotate(-12 19 32)"/><circle cx="45" cy="32" r="7" fill="#2F7BF5"/></g></svg>`,
+  trail:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 46 L30 18 L50 40" fill="none" stroke="var(--outline)" stroke-width="3" stroke-dasharray="3 4"/><g stroke="var(--outline)" stroke-width="3"><circle cx="14" cy="46" r="8" fill="#fff"/><circle cx="30" cy="18" r="8" fill="#FFC93C"/><circle cx="50" cy="40" r="8" fill="#fff"/></g></svg>`,
+  xword:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round" fill="#fff"><rect x="8" y="8" width="16" height="16" rx="3"/><rect x="24" y="8" width="16" height="16" rx="3"/><rect x="40" y="8" width="16" height="16" rx="3"/><rect x="24" y="24" width="16" height="16" rx="3"/><rect x="24" y="40" width="16" height="16" rx="3" fill="#FFC93C"/></g><text x="32" y="21" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="12" fill="#1F2340">R</text><text x="32" y="37" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="12" fill="#1F2340">x</text></svg>`,
+  terms:`<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"><path d="M6 18 H28 V27 A5 5 0 0 1 28 37 V46 H6 Z" fill="#fff"/><path d="M33 18 H58 V46 H33 V37 A5 5 0 0 0 33 27 Z" fill="#FFC93C"/></g><text x="17" y="36" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="11" fill="#1F2340">neur</text><text x="46" y="36" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="10" fill="#1F2340">-itis</text></svg>`
+});
+const STAR = on => `<svg viewBox="0 0 48 48" class="${on?'on':''}" aria-hidden="true"><path d="M24 4 L30 17 L44 18 L33 28 L37 42 L24 34 L11 42 L15 28 L4 18 L18 17 Z" fill="${on?'var(--gold)':'var(--sunk)'}" stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"/></svg>`;
+const SPEAKER = on => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9 H8 L13 5 V19 L8 15 H4 Z" fill="currentColor"/>${on ? '<path d="M16 9 Q19 12 16 15 M18 6 Q23 12 18 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>' : '<path d="M16 9 L21 15 M21 9 L16 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'}</svg>`;
+
+const MONITOR_SYMS = [
+  'M24 40 C8 28 4 18 12 11 C18 6 24 10 24 14 C24 10 30 6 36 11 C44 18 40 28 24 40Z',
+  'M24 6 C24 6 10 22 10 30 A14 14 0 0 0 38 30 C38 22 24 6 24 6Z',
+  'M27 4 L10 27 H22 L19 44 L38 19 H26 Z',
+  'M24 5 L29.5 18 L43 18.5 L32.5 27 L36 41 L24 33 L12 41 L15.5 27 L5 18.5 L18.5 18 Z',
+  'M30 6 A18 18 0 1 0 42 32 A14 14 0 1 1 30 6Z',
+  'M19 7 H29 V19 H41 V29 H29 V41 H19 V29 H7 V19 H19 Z',
+  'M24 6 L43 40 H5 Z',
+  'M8 8 H40 V40 H8 Z M16 16 V32 H32 V16 Z'
+];
+const MONITOR_PITCH = [392, 440, 494, 523, 587, 659, 698, 784];
+
+/* ================= domains & games ================= */
+const DOMAINS = {
+  memory:      { name:'Working memory',        region:'Dorsolateral prefrontal cortex', short:'DLPFC',    x:134, y:96 },
+  inhibition:  { name:'Self-control',          region:'Inferior frontal gyrus & anterior cingulate', short:'IFG · ACC', x:104, y:168 },
+  flexibility: { name:'Flexible thinking',     region:'Frontostriatal circuit',         short:'Striatum', x:198, y:142 },
+  spatial:     { name:'Spatial reasoning',     region:'Superior parietal lobule',       short:'Parietal', x:284, y:92 },
+};
+
+const NBACK_SCIENCE = {
+  region:'The n-back reliably activates the dorsolateral prefrontal cortex and posterior parietal cortex, the core of the brain\'s working memory network.',
+  cite:'Kirchner, 1958; Owen et al., Human Brain Mapping, 2005',
+  clinic:'Working memory problems show up in ADHD, schizophrenia and after traumatic brain injury, and n-back tasks are widely used in research on all three.',
+  transfer:'A 2008 study claimed n-back training raised fluid intelligence. Later meta-analyses found people improve at the n-back itself, with little benefit beyond it.',
+  transferCite:'Jaeggi et al., PNAS, 2008; Melby-Lervåg & Hulme, Developmental Psychology, 2013'
+};
+const nbackN = lv => 1 + Math.floor((lv - 1) / 3);
+const nbackISI = lv => 2600 - ((lv - 1) % 3) * 400;
+const nbackRules = (lv, thing) => {
+  const n = nbackN(lv);
+  return [`${thing} show up one at a time.`,
+    `Hit the button (or Space) when one matches the one ${n} ${n===1?'step':'steps'} back.`,
+    'Stay still when it doesn\'t. False alarms cost you.'];
+};
+
+const GAMES = {
+  tower: {
+    domain:'memory', name:'Control Tower', paradigm:'N-back', icon:'tower',
+    blurb:'Planes radio in call signs. Flag the repeat before they collide.',
+    params: lv => [`${nbackN(lv)}-back`, `${(nbackISI(lv)/1000).toFixed(1)} s per plane`],
+    rules: lv => nbackRules(lv, 'Planes'),
+    run(c){
+      runNback(c, {
+        symbols: 'BCDFGHJKLMNPQRSTVWXZ'.split(''),
+        button:'Repeat call sign!',
+        html:`<div class="radar" id="fx"><div class="sweep"></div><div id="slot"></div><div class="alarm-text" id="twAlarm"></div></div>
+          <div class="meter-row"><span>Repeats caught</span><b class="num" id="twCount">0</b></div>`,
+        onHit(n){ $('#twCount').textContent = n; const pl = $('#slot .plane'); if (pl) pl.insertAdjacentHTML('beforeend', '<span class="stamp">Cleared ✓</span>'); },
+        onMissTarget(){ const r = $('#fx'), a = $('#twAlarm'); a.textContent = 'NEAR MISS!'; r.classList.add('alarm'); setTimeout(() => { r.classList.remove('alarm'); a.textContent = ''; }, 800); },
+        onFalse(){ const a = $('#twAlarm'); a.textContent = 'False alarm'; setTimeout(() => { a.textContent = ''; }, 700); },
+        show(sym){
+          $('#slot').innerHTML = `<div class="plane"><svg viewBox="0 0 200 120" aria-hidden="true"><g stroke="var(--outline)" stroke-width="4" stroke-linejoin="round">
+            <path d="M80 50 L104 10 L120 10 L112 50Z" fill="#fff"/><path d="M80 70 L104 110 L120 110 L112 70Z" fill="#fff"/>
+            <rect x="20" y="44" width="150" height="32" rx="16" fill="#fff"/><path d="M26 48 L14 22 L30 22 L44 46Z" fill="var(--d-memory)"/>
+            <circle cx="150" cy="58" r="5" fill="#BDE3FF"/><circle cx="134" cy="58" r="5" fill="#BDE3FF"/></g>
+            <text x="78" y="72" text-anchor="middle" class="callsign" fill="#1F2340">${sym}</text></svg></div>`;
+          Sound.whoosh();
+        },
+        hide(){ const p = $('#slot .plane'); if (p) p.style.opacity = '.0'; }
+      });
+    },
+    insight:(n) => `At ${n}-back you hold the last ${n} call ${n===1?'sign':'signs'} in mind and update that list with every new plane. Constant updating is the job of your dorsolateral prefrontal cortex.`,
+    science: NBACK_SCIENCE
+  },
+
+  night: {
+    domain:'memory', name:'Night Shift', paradigm:'N-back', icon:'night',
+    blurb:'Patient alarms beep with symbols and tones. Catch the repeating one.',
+    params: lv => [`${nbackN(lv)}-back`, `${(nbackISI(lv)/1000).toFixed(1)} s per alarm`, 'symbol + tone'],
+    rules: lv => nbackRules(lv, 'Alarm symbols').concat(['Each symbol has its own tone, so with sound on you can track it by ear too.']),
+    run(c){
+      nsStab = 60;
+      runNback(c, {
+        symbols:[0,1,2,3,4,5,6,7],
+        button:'Same alarm!',
+        html:`<div class="monitor" id="fx"><div class="screen"><svg class="ecg" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 24 H40 L48 10 L56 34 L62 24 H140 L148 6 L156 36 L162 24 H200 H240 L248 10 L256 34 L262 24 H340 L348 6 L356 36 L362 24 H400"/></svg><div class="sym" id="slot"></div></div>
+          <div class="monitor-foot"><span><i class="led" id="led"></i><span id="stabLbl">Bed 4 · Stable</span></span><span class="num" id="bpm">72 bpm</span></div>
+          <div class="meter-row"><span>Patient stability</span><span class="mbar"><i id="stabBar" style="width:60%"></i></span></div></div>`,
+        onHit(){ stab(+12); }, onMissTarget(){ stab(-18); }, onFalse(){ stab(-10); },
+        show(sym){
+          const s = $('#slot'); s.classList.remove('pop'); void s.offsetWidth; s.classList.add('pop');
+          s.innerHTML = `<svg viewBox="0 0 48 48" aria-hidden="true"><path fill-rule="evenodd" d="${MONITOR_SYMS[sym]}"/></svg>`;
+          Sound.blip(MONITOR_PITCH[sym]);
+          $('#bpm').textContent = Math.round(70 + (100 - nsStab) * .55 + rand(6)) + ' bpm';
+        },
+        hide(){ $('#slot').innerHTML = ''; }
+      });
+    },
+    insight:(n) => `Your patient ended the shift ${nsStab >= 60 ? 'stable' : nsStab >= 30 ? 'under watch' : 'needing help'}. You tracked alarms ${n} back while new ones kept coming. Hospital staff juggle changing information like this all shift, and it leans on the same prefrontal working memory network.`,
+    science:{ ...NBACK_SCIENCE,
+      clinic:'Working memory problems show up in ADHD, schizophrenia and after traumatic brain injury. Pairing a sight with a sound, as Night Shift does, echoes the audiovisual n-back used in training studies.' }
+  },
+
+  potion: {
+    domain:'inhibition', name:'Potion Shop', paradigm:'Stroop', icon:'potion',
+    blurb:'Sort potions by the color of the ink. The labels lie.',
+    incong: lv => Math.min(0.9, 0.5 + 0.04 * lv),
+    limit: lv => Math.max(900, 2300 - 120 * lv),
+    params(lv){ return [`${Math.round(this.incong(lv)*100)}% tricky labels`, `${(this.limit(lv)/1000).toFixed(1)} s per potion`]; },
+    rules: () => ['Each potion\'s label names a color, written in magic ink.',
+      'Sort by the INK color. Ignore what the label says. Keys 1–4 work too.',
+      'Your timer speeds up when you\'re on a roll and slows after a slip.'],
+    run(c){
+      const C = [{id:'red',label:'Red'},{id:'blue',label:'Blue'},{id:'green',label:'Green'},{id:'purple',label:'Purple'}];
+      const total = 24, pInc = this.incong(c.level);
+      let limit = this.limit(c.level), streak = 0, t = -1, active = false, start = 0, timer = null, trial = null;
+      const log = [];
+      let brew = 0;
+      c.stage.innerHTML = `<p class="cue">What color is the <b>ink</b>?</p><div id="fx" style="width:min(220px,58vw)"><div id="slot"></div></div>
+        <div class="meter-row"><span>Cauldron</span><span class="mbar"><i id="brewBar" style="width:0%;background:var(--ink-purple)"></i></span><b class="num" id="brewN">0/6</b></div>
+        <div class="grid4">${C.map((x,k) => `<button class="choice" data-c="${x.id}"><i class="blob" style="background:var(--ink-${x.id})"></i>${x.label}<kbd>${k+1}</kbd></button>`).join('')}</div>`;
+      const fx = $('#fx');
+      const draw = tr => {
+        const col = tr ? `var(--ink-${tr.ink})` : 'var(--glass)';
+        $('#slot').innerHTML = `<svg class="bottle" viewBox="0 0 200 230" aria-hidden="true"><g class="wobble" stroke="var(--outline)" stroke-width="4" stroke-linejoin="round">
+          <rect x="84" y="6" width="32" height="24" rx="5" fill="#C68B59"/>
+          <path d="M82 30 H118 V78 C160 92 182 122 182 152 A82 70 0 0 1 18 152 C18 122 40 92 82 78 Z" fill="var(--glass)"/>
+          ${tr ? `<path d="M24 150 C60 136 100 160 176 146 C176 186 140 218 100 218 C60 218 24 190 24 150Z" fill="${col}"/>
+          <circle class="bubble" cx="70" cy="190" r="5" fill="#fff" stroke-width="2"/><circle class="bubble" style="animation-delay:.6s" cx="130" cy="180" r="4" fill="#fff" stroke-width="2"/>
+          <rect x="44" y="104" width="112" height="44" rx="12" fill="var(--label)"/>
+          <text x="100" y="138" text-anchor="middle" class="potion-word" fill="${col}" stroke="none">${tr.word.toUpperCase()}</text>` : ''}
+          <path d="M60 96 C48 104 40 116 38 128" fill="none" stroke="#fff" stroke-width="5" opacity=".7"/></g></svg>`;
+      };
+      draw(null);
+      const next = () => {
+        t++; c.progress(t, total);
+        if (t >= total) return done();
+        const w = pick(C), inc = Math.random() < pInc;
+        const ink = inc ? pick(C.filter(x => x.id !== w.id)) : w;
+        trial = { word:w.label, ink:ink.id, inc };
+        draw(trial);
+        active = true; start = performance.now();
+        timer = c.later(() => answer(null), limit);
+      };
+      const answer = id => {
+        if (!active) return; active = false; clearTimeout(timer);
+        const rt = performance.now() - start, ok = id === trial.ink;
+        log.push({ ...trial, rt, ok });
+        if (ok) {
+          if (++streak >= 2) { limit = Math.max(600, limit - 80); streak = 0; } c.hit(fx, `var(--ink-${trial.ink})`);
+          brew++; if (brew >= 6) { brew = 0; c.bonus(fx, 50, 'Brew complete!'); }
+        }
+        else { limit += 120; streak = 0; c.miss(fx); }
+        $('#brewBar').style.width = (brew / 6 * 100) + '%'; $('#brewN').textContent = `${brew}/6`;
+        c.later(() => draw(null), 160);
+        c.later(next, 420);
+      };
+      const done = () => {
+        const acc = log.filter(x => x.ok).length / log.length;
+        const rc = mean(log.filter(x => x.ok && !x.inc).map(x => x.rt));
+        const ri = mean(log.filter(x => x.ok && x.inc).map(x => x.rt));
+        const cost = ri - rc;
+        c.finish({ acc, measure: cost,
+          stats:[['Honest labels', ms(rc)], ['Lying labels', ms(ri)], ['Interference', signed(cost)], ['Final timer', `${(limit/1000).toFixed(2)} s`]],
+          insight: isFinite(cost) && cost > 0
+            ? `Lying labels cost you about ${Math.round(cost)} ms extra. Reading is automatic, so your brain has to notice the clash and override the word before it can name the ink.`
+            : 'Reading is automatic, so a lying label slows most people down while the brain notices the clash and overrides it. A few more rounds will give you a steady measure.' });
+      };
+      c.stage.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => answer(b.dataset.c)));
+      c.onKey(k => { const i = '1234'.indexOf(k); if (i >= 0) answer(C[i].id); });
+      c.later(next, 500);
+    },
+    science:{
+      region:'The anterior cingulate cortex flags the clash between word and ink, and the right inferior frontal gyrus helps suppress the automatic urge to read.',
+      cite:'Stroop, 1935; Botvinick et al., Psychological Review, 2001; Aron et al., Trends in Cognitive Sciences, 2004',
+      clinic:'Stroop interference is a standard neuropsychological measure of frontal lobe function, used in assessing ADHD, head injury and dementia.',
+      transfer:'Practice shrinks Stroop interference. Whether that improves self-control outside the task is much less clear.',
+      transferCite:'Simons et al., Psychological Science in the Public Interest, 2016'
+    }
+  },
+
+  firefly: {
+    domain:'inhibition', name:'Firefly Catch', paradigm:'Go/No-Go', icon:'firefly',
+    blurb:'Tap every firefly. Never tap a wasp.',
+    limit: lv => Math.max(450, 1300 - 70 * lv),
+    params(lv){ return [`${(this.limit(lv)/1000).toFixed(2)} s to catch`, lv >= 7 ? 'sneaky wasps' : lv >= 4 ? 'tricky wasps' : 'easy-to-spot wasps']; },
+    rules: () => ['Bugs pop up in the meadow one at a time.',
+      'Firefly: tap the meadow (or press Space) as fast as you can.',
+      'Wasp: do nothing. Tapping a wasp breaks your combo.',
+      'At higher levels the wasps start to look like fireflies.'],
+    run(c){
+      const total = 30, pNoGo = 0.25;
+      const waspCol = c.level >= 7 ? '#FFDF5A' : c.level >= 4 ? '#FFB347' : '#FF8A3D';
+      let limit = this.limit(c.level), streak = 0, t = -1, active = false, start = 0, timer = null, cur = null, el = null;
+      const log = [];
+      let jar = 0;
+      c.stage.innerHTML = `<p class="cue">Fireflies: <b>tap</b> · Wasps: <b>hold still</b> · Golden ones are worth extra</p><div class="meadow" id="fx" role="button" aria-label="Meadow. Tap or press Space to catch a firefly"></div>
+        <div class="meter-row"><span>Firefly jar</span><span class="mbar"><i id="jarBar" style="width:0%;background:#FFE45C"></i></span><b class="num" id="jarN">0</b></div>`;
+      const fx = $('#fx');
+      const FIREFLY = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="62" r="34" fill="#FFF3A0" opacity=".55"/><g stroke="#1F2340" stroke-width="4" stroke-linejoin="round"><ellipse cx="30" cy="36" rx="16" ry="10" fill="#fff" opacity=".9"/><ellipse cx="70" cy="36" rx="16" ry="10" fill="#fff" opacity=".9"/><ellipse cx="50" cy="60" rx="17" ry="22" fill="#FFE45C"/><circle cx="50" cy="34" r="12" fill="#3A3F6B"/></g><circle cx="45" cy="33" r="3" fill="#fff"/><circle cx="55" cy="33" r="3" fill="#fff"/><path d="M45 40 Q50 44 55 40" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`;
+      const WASP = `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="wb"><ellipse cx="50" cy="60" rx="17" ry="22"/></clipPath></defs><g stroke="#1F2340" stroke-width="4" stroke-linejoin="round"><ellipse cx="30" cy="36" rx="16" ry="10" fill="#fff" opacity=".9"/><ellipse cx="70" cy="36" rx="16" ry="10" fill="#fff" opacity=".9"/><path d="M44 80 L50 96 L56 80Z" fill="#1F2340"/><ellipse cx="50" cy="60" rx="17" ry="22" fill="${waspCol}"/></g><g clip-path="url(#wb)" fill="#1F2340"><rect x="30" y="50" width="40" height="6"/><rect x="30" y="64" width="40" height="6"/></g><ellipse cx="50" cy="60" rx="17" ry="22" fill="none" stroke="#1F2340" stroke-width="4"/><circle cx="50" cy="34" r="12" fill="#3A3F6B" stroke="#1F2340" stroke-width="4"/><circle cx="45" cy="34" r="3" fill="#fff"/><circle cx="55" cy="34" r="3" fill="#fff"/><path d="M40 27 L47 30 M60 27 L53 30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+      const clear = (cls) => { const e = el; if (!e) return; e.classList.add(cls); c.later(() => e.remove(), 260); el = null; };
+      const next = () => {
+        t++; c.progress(t, total);
+        if (t >= total) return c.later(done, 300);
+        c.later(spawn, 350 + rand(500));
+      };
+      const spawn = () => {
+        const go = t < 3 ? true : Math.random() >= pNoGo;
+        cur = { go, gold: go && t > 3 && Math.random() < .1 };
+        el = document.createElement('div'); el.className = 'critter' + (cur.gold ? ' gold' : '');
+        el.style.left = (6 + rand(68)) + '%'; el.style.top = (6 + rand(50)) + '%';
+        el.innerHTML = go ? (cur.gold ? FIREFLY.replace(/#FFE45C/g, '#FFC21A').replace('#FFF3A0', '#FFE680') : FIREFLY) : WASP;
+        fx.appendChild(el);
+        active = true; start = performance.now();
+        timer = c.later(expire, limit);
+      };
+      const respond = () => {
+        if (!active) return; active = false; clearTimeout(timer);
+        const rt = performance.now() - start;
+        if (cur.go) {
+          log.push({ go:true, ok:true, rt });
+          if (++streak >= 2) { limit = Math.max(350, limit - 40); streak = 0; }
+          c.hit(el, '#FFE45C'); if (cur.gold) c.bonus(el, 30, 'Golden!');
+          jar++; $('#jarN').textContent = jar; $('#jarBar').style.width = Math.min(100, jar / 22 * 100) + '%';
+          clear('caught');
+        } else {
+          log.push({ go:false, ok:false });
+          limit += 80; streak = 0; c.miss(fx); clear('gone');
+        }
+        next();
+      };
+      const expire = () => {
+        if (!active) return; active = false;
+        if (cur.go) { log.push({ go:true, ok:false, omit:true }); limit += 80; streak = 0; c.miss(null); }
+        else { log.push({ go:false, ok:true }); c.hit(el, '#BFC6FF', true); }
+        clear('gone'); next();
+      };
+      fx.addEventListener('pointerdown', e => { e.preventDefault(); respond(); });
+      c.onKey(k => { if (k === ' ') respond(); });
+      c.later(next, 400);
+      const done = () => {
+        const acc = log.filter(x => x.ok).length / log.length;
+        const gos = log.filter(x => x.go), nogos = log.filter(x => !x.go);
+        const rt = mean(gos.filter(x => x.ok).map(x => x.rt));
+        const comm = nogos.filter(x => !x.ok).length, omit = gos.filter(x => !x.ok).length;
+        c.finish({ acc, measure: nogos.length ? comm / nogos.length * 100 : NaN,
+          stats:[['Catch speed', ms(rt)], ['Wasps tapped', `${comm} / ${nogos.length}`], ['Fireflies missed', `${omit} / ${gos.length}`], ['Final window', `${(limit/1000).toFixed(2)} s`]],
+          insight: comm === 0
+            ? `You held back on every wasp while catching fireflies in about ${Math.round(rt)} ms. Because fireflies are common, tapping becomes a habit, and stopping that habit is your right inferior frontal gyrus at work.`
+            : `You tapped ${comm} ${comm===1?'wasp':'wasps'}. That's normal: fireflies are common, so tapping becomes a habit and the brake has to fire fast. Those slips, called commission errors, are what clinicians count in attention tests.` });
+      };
+    },
+    science:{
+      region:'Stopping a habitual response engages the right inferior frontal gyrus and the pre-supplementary motor area, a fast "brake" network in the frontal lobe.',
+      cite:'Aron et al., Trends in Cognitive Sciences, 2004; Simmonds et al., Neuropsychologia, 2008',
+      clinic:'Go/No-Go style tasks are part of continuous performance tests used in ADHD evaluation, where tapping on the "no" items (commission errors) is a key measure.',
+      transfer:'Response inhibition improves with practice on the trained task. Evidence that it strengthens everyday self-control is weak.',
+      transferCite:'Simons et al., Psychological Science in the Public Interest, 2016'
+    }
+  },
+
+  keeper: {
+    domain:'flexibility', name:'Creature Keeper', paradigm:'Task switching', icon:'keeper',
+    blurb:'Check guests into the right wing. The house rule keeps changing.',
+    stage: lv => lv <= 2 ? 0 : lv <= 4 ? 1 : lv <= 7 ? 2 : 3,
+    limit: lv => Math.max(1300, 3600 - 160 * lv),
+    params(lv){
+      const s = this.stage(lv);
+      return [[ '2 rules', '3 rules', '3 rules', '4 rules' ][s], [ 'rule always shown', 'rule flashes, then hides', 'no rule shown: track the order', 'no rule shown: track the order' ][s], `${(this.limit(lv)/1000).toFixed(1)} s per guest`];
+    },
+    rules(lv){
+      const s = this.stage(lv);
+      return ['Creatures arrive at the Monster Motel. Send each one to the left or right wing (F/← or J/→).',
+        'The house rule decides which feature counts: color, legs, size or pattern. The rule card shows where each goes.',
+        ...[ ['The active rule is highlighted the whole time. It changes without warning.'],
+             ['The active rule lights up for a moment before each guest, then goes dark. Remember it.'],
+             ['No highlight here. The rules take turns in order, two guests each. Keep count in your head.', 'If you slip, I\'ll tell you which rule that guest was, so you can get back on track.'],
+             ['Four rules now, taking turns in order, two guests each, and the clock is faster.', 'If you slip, I\'ll tell you which rule that guest was.'] ][s],
+        'Watch out: guests are designed so the old rule usually gives the wrong answer.'];
+    },
+    run(c){
+      const total = 32, st = this.stage(c.level);
+      const ALL = [
+        { id:'color',   name:'Color',   left:'pink',  right:'blue' },
+        { id:'legs',    name:'Legs',    left:'2 legs', right:'4 legs' },
+        { id:'size',    name:'Size',    left:'small', right:'big' },
+        { id:'pattern', name:'Pattern', left:'spots', right:'stripes' }
+      ];
+      const rules = ALL.slice(0, [2,3,3,4][st]);
+      const cued = st <= 1, flash = st === 1, ordered = st >= 2;
+      let limit = this.limit(c.level), streak = 0, t = -1, ri = 0, prev = null, active = false, start = 0, timer = null, trial = null, clipN = 0;
+      const log = [];
+      const ans = (cr, rule) => cr[rule.id] ? 1 : 0;   // 0 = left feature, 1 = right feature
+      c.stage.innerHTML = `${ordered ? `<p class="cue">Order: <b>${rules.map(r => r.name).join(' → ')}</b>, two guests each, then repeat</p>` : '<p class="cue">Follow the highlighted house rule</p>'}
+        <div class="motel">
+          <div class="room" id="fx"><div id="slot"></div><div class="door" aria-hidden="true"></div></div>
+          <div class="rulecard">${rules.map(r => `<div class="rrow" data-r="${r.id}"><b>${r.name}</b><span>← ${r.left}</span><span>${r.right} →</span></div>`).join('')}</div>
+        </div>
+        <div class="verdict" id="kv" aria-live="polite"></div>
+        <div class="row2"><button class="choice" data-a="0">← Left wing<kbd>F</kbd></button><button class="choice" data-a="1">Right wing →<kbd>J</kbd></button></div>`;
+      const rows = {}; c.stage.querySelectorAll('.rrow').forEach(r => rows[r.dataset.r] = r);
+      const light = id => Object.entries(rows).forEach(([k, el]) => el.classList.toggle('on', k === id));
+      const fx = $('#fx'), kv = $('#kv');
+      const creature = cr => {
+        const id = 'kp' + (++clipN), body = cr.color ? '#5AA9FF' : '#FF8FB8', dark = cr.color ? '#2E6FC2' : '#D4558A';
+        const sc = cr.size ? 1 : .62, legX = cr.legs ? [-26,-9,9,26] : [-14,14];
+        return `<svg viewBox="-70 -110 140 120" aria-label="${cr.color?'Blue':'Pink'}, ${cr.legs?4:2} legs, ${cr.size?'big':'small'}, ${cr.pattern?'stripes':'spots'}"><g transform="scale(${sc})" transform-origin="0 0">
+          <g stroke="var(--outline)" stroke-width="5" stroke-linecap="round">${legX.map(x => `<line x1="${x}" y1="-22" x2="${x}" y2="0"/>`).join('')}</g>
+          <defs><clipPath id="${id}"><ellipse cx="0" cy="-58" rx="44" ry="40"/></clipPath></defs>
+          <ellipse cx="0" cy="-58" rx="44" ry="40" fill="${body}"/>
+          <g clip-path="url(#${id})" fill="${dark}">${cr.pattern
+            ? '<rect x="-50" y="-78" width="100" height="9"/><rect x="-50" y="-58" width="100" height="9"/><rect x="-50" y="-38" width="100" height="9"/>'
+            : '<circle cx="-24" cy="-40" r="7"/><circle cx="22" cy="-34" r="6"/><circle cx="28" cy="-72" r="6"/><circle cx="-30" cy="-74" r="5"/>'}</g>
+          <ellipse cx="0" cy="-58" rx="44" ry="40" fill="none" stroke="var(--outline)" stroke-width="5"/>
+          <circle cx="-15" cy="-66" r="10" fill="#fff" stroke="var(--outline)" stroke-width="3"/><circle cx="15" cy="-66" r="10" fill="#fff" stroke="var(--outline)" stroke-width="3"/>
+          <circle cx="-13" cy="-64" r="4" fill="#1F2340"/><circle cx="17" cy="-64" r="4" fill="#1F2340"/>
+          <path d="M-10 -46 Q0 -38 10 -46" stroke="var(--outline)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M-12 -96 L-18 -110 M12 -96 L18 -110" stroke="var(--outline)" stroke-width="4" stroke-linecap="round"/></g></svg>`;
+      };
+      const ruleFor = k => ordered ? rules[Math.floor(k / 2) % rules.length] : null;
+      const next = () => {
+        t++; c.progress(t, total);
+        if (t >= total) return done();
+        let rule;
+        if (ordered) rule = ruleFor(t);
+        else { if (t === 0) ri = rand(rules.length); else if (Math.random() < (st === 0 ? .35 : .45)) ri = (ri + 1 + rand(rules.length - 1)) % rules.length; rule = rules[ri]; }
+        const other = prev && prev.id !== rule.id ? prev : pick(rules.filter(r => r.id !== rule.id));
+        let cr, tries = 0;
+        do { cr = { color:rand(2), legs:rand(2), size:rand(2), pattern:rand(2) }; tries++; }
+        while (tries < 30 && Math.random() < .8 && ans(cr, rule) === ans(cr, other));
+        trial = { rule, cr, correct: ans(cr, rule), sw: prev !== null && prev.id !== rule.id };
+        prev = rule; kv.textContent = '';
+        $('#slot').innerHTML = '';
+        const show = () => {
+          $('#slot').innerHTML = creature(cr);
+          active = true; start = performance.now();
+          timer = c.later(() => answer(null), limit);
+        };
+        if (ordered) { light(t === 0 ? rule.id : null); show(); }
+        else if (flash) { light(rule.id); c.later(() => { light(null); c.later(show, 250); }, 650); }
+        else { light(rule.id); show(); }
+      };
+      const answer = a => {
+        if (!active) return; active = false; clearTimeout(timer);
+        const rt = performance.now() - start, ok = a === trial.correct;
+        log.push({ ok, rt, sw: trial.sw });
+        if (ok) { if (++streak >= 2) { limit = Math.max(800, limit - 80); streak = 0; } c.hit(fx, trial.cr.color ? '#5AA9FF' : '#FF8FB8'); kv.className = 'verdict good'; kv.textContent = a ? 'Right wing ✓' : 'Left wing ✓'; }
+        else {
+          limit += 140; streak = 0; c.miss(fx); kv.className = 'verdict bad';
+          kv.textContent = a === null ? `Too slow! That was a ${trial.rule.name.toLowerCase()} guest.` : `Wrong wing! That was a ${trial.rule.name.toLowerCase()} guest.`;
+          if (!cued) { light(trial.rule.id); c.later(() => light(null), 700); }
+        }
+        c.later(() => { $('#slot').innerHTML = ''; }, 260);
+        c.later(next, ok ? 420 : 900);
+      };
+      const done = () => {
+        const acc = log.filter(x => x.ok).length / log.length;
+        const sc = log.slice(1);
+        const rr = mean(sc.filter(x => x.ok && !x.sw).map(x => x.rt)), rs = mean(sc.filter(x => x.ok && x.sw).map(x => x.rt)), cost = rs - rr;
+        c.finish({ acc, measure: cost, levelDelta: acc >= .95 ? 2 : acc >= .85 ? 1 : acc < .65 ? -1 : 0,
+          stats:[['Same rule again', ms(rr)], ['Rule switched', ms(rs)], ['Switch cost', signed(cost)], ['Rules in play', String(rules.length)]],
+          insight: isFinite(cost) && cost > 0
+            ? `Switching rules cost you about ${Math.round(cost)} ms. ${ordered ? 'With no highlight, your brain also had to keep track of where it was in the order, which is extra work for prefrontal cortex.' : 'That pause is your brain swapping one rule set for another.'}`
+            : 'Most people slow down right after the rule changes, because the brain has to swap one rule set for another. A few more rounds will steady your number.' });
+      };
+      c.stage.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => answer(+b.dataset.a)));
+      c.onKey(k => { if ('fF'.includes(k) || k === 'ArrowLeft') answer(0); if ('jJ'.includes(k) || k === 'ArrowRight') answer(1); });
+      c.later(next, 500);
+    },
+    science:{
+      region:'Switching rules recruits a frontoparietal control network plus the basal ganglia, which help gate which rule set is active. Keeping track of an unmarked order adds a working memory load on the prefrontal cortex.',
+      cite:'Rogers & Monsell, Journal of Experimental Psychology: General, 1995; Monsell, Trends in Cognitive Sciences, 2003',
+      clinic:'People with Parkinson\'s disease, which depletes dopamine in the striatum, often struggle to shift between rules, and dopamine medication changes how well they switch.',
+      transfer:'Switch costs shrink with practice and some of that carries over to similar switching tasks. Broad real-world benefits are not well established.',
+      transferCite:'Cools et al., Cerebral Cortex, 2001'
+    }
+  },
+
+  dock: {
+    domain:'spatial', name:'Space Dock', paradigm:'Mental rotation', icon:'dock',
+    blurb:'Will the tumbling ship fit the port, or was it built mirrored?',
+    maxAngle: lv => Math.min(180, 45 + lv * 15),
+    limit: lv => Math.max(2500, 7000 - 350 * lv),
+    params(lv){ return [`turns up to ${this.maxAngle(lv)}°`, lv >= 6 ? 'big ships' : 'small ships', `${(this.limit(lv)/1000).toFixed(1)} s per ship`]; },
+    rules: () => ['On the left is the docking port. On the right, a ship drifts in at an angle.',
+      'Decide whether the ship is the same shape turned, so it docks, or a mirror image that never will.',
+      'Left button (F or ←) = Docks. Right button (J or →) = Mirrored.'],
+    run(c){
+      const total = 16, maxA = this.maxAngle(c.level), step = c.level < 5 ? 45 : 30, limit = this.limit(c.level);
+      const pool = c.level >= 6 ? SHAPES.easy.concat(SHAPES.hard) : SHAPES.easy;
+      let t = -1, active = false, start = 0, timer = null, trial = null;
+      const log = [];
+      c.stage.innerHTML = `<p class="cue">Does the ship fit the port?</p>
+        <div class="dock-pair"><figure class="space"><div id="rA"></div><figcaption>Docking port</figcaption></figure><figure class="space" id="fx"><div id="rB"></div><figcaption>Incoming ship</figcaption></figure></div>
+        <div class="meter-row"><span>Station modules</span><span class="station" id="station"></span></div>
+        <div class="row2"><button class="choice" data-a="0">Docks<kbd>F</kbd></button><button class="choice" data-a="1">Mirrored<kbd>J</kbd></button></div>`;
+      const fx = $('#fx');
+      const next = () => {
+        t++; c.progress(t, total);
+        if (t >= total) return done();
+        const shape = pick(pool), mirror = Math.random() < 0.5;
+        const angle = rand(Math.floor(maxA / step) + 1) * step * (Math.random() < 0.5 ? -1 : 1);
+        const base = rand(4) * 90;
+        trial = { mirror, angle: Math.abs(angle) };
+        $('#rA').innerHTML = shapeSVG(shape, base, false, true);
+        $('#rB').innerHTML = shapeSVG(shape, base + angle, mirror, false);
+        Sound.whoosh();
+        active = true; start = performance.now();
+        timer = c.later(() => answer(null), limit);
+      };
+      const answer = a => {
+        if (!active) return; active = false; clearTimeout(timer);
+        const rt = performance.now() - start, ok = a === (trial.mirror ? 1 : 0);
+        log.push({ ...trial, rt, ok });
+        ok ? c.hit(fx, 'var(--d-spatial)') : c.miss(fx);
+        const ship = $('#rB svg'); if (ship && ok) ship.classList.add(trial.mirror ? 'reject' : 'docking');
+        if (ok) $('#station').insertAdjacentHTML('beforeend', '<i></i>');
+        c.later(() => { $('#rA').innerHTML = ''; $('#rB').innerHTML = ''; }, 420);
+        c.later(next, 640);
+      };
+      const done = () => {
+        const acc = log.filter(x => x.ok).length / log.length;
+        const pts = log.filter(x => x.ok), xs = pts.map(p => p.angle), ys = pts.map(p => p.rt);
+        const mx = mean(xs), my = mean(ys); let num = 0, den = 0;
+        xs.forEach((x,k) => { num += (x-mx)*(ys[k]-my); den += (x-mx)**2; });
+        const slope = den > 0 && pts.length >= 5 ? num / den : NaN;
+        c.finish({ acc, measure: slope,
+          stats:[['Small turns (≤45°)', ms(mean(pts.filter(p => p.angle <= 45).map(p => p.rt)))], ['Big turns (≥90°)', ms(mean(pts.filter(p => p.angle >= 90).map(p => p.rt)))],
+                 ['Cost per degree', isFinite(slope) ? `${slope.toFixed(1)} ms` : '–'], ['Biggest turn', `${maxA}°`]],
+          insight: isFinite(slope) && slope > 0
+            ? `Each extra degree of turn added about ${slope.toFixed(1)} ms to your answer. Shepard and Metzler found the same straight-line pattern in 1971: people turn a mental picture at a steady speed, as if it were a real object.`
+            : 'For most people, answer time climbs in a straight line as the turn gets bigger, as if they were rotating a real object in their head. Play more rounds at higher levels to see your own line.' });
+      };
+      c.stage.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => answer(+b.dataset.a)));
+      c.onKey(k => { if ('fF'.includes(k) || k === 'ArrowLeft') answer(0); if ('jJ'.includes(k) || k === 'ArrowRight') answer(1); });
+      c.later(next, 500);
+    },
+    science:{
+      region:'Mental rotation depends heavily on the superior parietal lobule, with help from premotor areas that simulate turning the object by hand.',
+      cite:'Shepard & Metzler, Science, 1971; Zacks, Journal of Cognitive Neuroscience, 2008',
+      clinic:'Judging whether a rotated hand is left or right is the first stage of graded motor imagery, a rehabilitation approach for chronic pain and phantom limb pain.',
+      transfer:'Spatial training is one of the better cases for transfer: gains last and carry over to related spatial tasks, though not to thinking in general.',
+      transferCite:'Moseley, Pain, 2004; Uttal et al., Psychological Bulletin, 2013'
+    }
+  },
+
+  sort: {
+    domain:'flexibility', name:'Shape Shifter Sort', paradigm:'Card sorting', icon:'sort',
+    blurb:'Find the secret sorting rule, then catch it when it changes.',
+    runLen: lv => Math.max(4, 8 - Math.floor(lv / 2)),
+    params(lv){ return [`rule changes after ${this.runLen(lv)} right in a row`, lv <= 2 ? 'with change alerts' : 'no warnings']; },
+    rules: lv => ['Each new card matches one of the four piles by color, by shape, or by number.',
+      'There is a secret rule, and I won\'t tell you what it is. Use the "match" or "nope" feedback to work it out.',
+      'Once you have it, the rule changes without warning, and you have to find the new one.',
+      ...(lv <= 2 ? ['At this level I\'ll give you a heads-up when the rule changes.'] : [])],
+    run(c){
+      const total = 36, runLen = this.runLen(c.level), RULES = ['color','shape','count'];
+      const COLORS = ['#0072B2','#E69F00','#CC79A7','#F0E442'];   // Okabe-Ito colors, distinguishable with common color blindness
+      let rule = pick(RULES), prevRule = null, inRow = 0, t = -1, active = false, start = 0, card = null, switches = 0;
+      const log = [];
+      const shapeAt = (s, x, y, col) => {
+        const P = {
+          0:`<circle cx="${x}" cy="${y}" r="11"/>`,
+          1:`<path d="M${x} ${y-12} L${x+12} ${y+10} L${x-12} ${y+10} Z"/>`,
+          2:`<path d="${[...Array(10)].map((_,k) => { const a = -Math.PI/2 + k*Math.PI/5, r = k%2 ? 5.5 : 13; return `${k?'L':'M'}${(x+r*Math.cos(a)).toFixed(1)} ${(y+r*Math.sin(a)).toFixed(1)}`; }).join(' ')} Z"/>`,
+          3:`<path d="M${x-4} ${y-12} H${x+4} V${y-4} H${x+12} V${y+4} H${x+4} V${y+12} H${x-4} V${y+4} H${x-12} V${y-4} H${x-4} Z"/>`
+        };
+        return `<g fill="${col}" stroke="var(--outline)" stroke-width="2.5" stroke-linejoin="round">${P[s]}</g>`;
+      };
+      const POS = { 1:[[50,60]], 2:[[50,38],[50,82]], 3:[[50,30],[30,82],[70,82]], 4:[[30,38],[70,38],[30,82],[70,82]] };
+      const cardSVG = (color, shape, count) => `<svg viewBox="0 0 100 120" aria-hidden="true">${POS[count].map(([x,y]) => shapeAt(shape, x, y, COLORS[color])).join('')}</svg>`;
+      const NAMES = { color:['blue','orange','pink','yellow'], shape:['circle','triangle','star','cross'] };
+      c.stage.innerHTML = `<p class="cue">Which pile does the new card go with?</p>
+        <div class="piles">${[0,1,2,3].map(k => `<button class="pile" data-k="${k}" aria-label="Pile ${k+1}: ${k+1} ${NAMES.color[k]} ${NAMES.shape[k]}${k?'s':''}">${cardSVG(k,k,k+1)}<kbd>${k+1}</kbd></button>`).join('')}</div>
+        <div id="fx"><div id="slot" style="min-height:150px;display:grid;place-items:center"></div></div>
+        <div class="verdict" id="verdict" aria-live="polite"></div><div class="hint" id="hint"></div>`;
+      const fx = $('#fx'), verdict = $('#verdict'), hint = $('#hint');
+      const next = () => {
+        t++; c.progress(t, total);
+        if (t >= total) return done();
+        const ks = [0,1,2,3].sort(() => Math.random() - .5).slice(0, 3);   // each dimension points to a different pile, so every card is unambiguous
+        card = { color:ks[0], shape:ks[1], count:ks[2] };
+        $('#slot').innerHTML = `<div class="newcard">${cardSVG(card.color, card.shape, card.count + 1)}</div>`;
+        active = true; start = performance.now();
+      };
+      const answer = k => {
+        if (!active) return; active = false;
+        const rt = performance.now() - start, ok = k === card[rule];
+        const persev = !ok && prevRule && k === card[prevRule];
+        log.push({ ok, rt, persev, rule });
+        if (ok) { c.hit(fx, 'var(--d-flexibility)'); inRow++; verdict.className = 'verdict good'; verdict.textContent = inRow >= 2 ? `Match! ${inRow} in a row` : 'Match!'; }
+        else { c.miss(fx); verdict.className = 'verdict bad'; verdict.textContent = 'Nope, not that pile'; inRow = 0; }
+        hint.textContent = '';
+        if (inRow >= runLen) {
+          prevRule = rule; rule = pick(RULES.filter(r => r !== rule)); inRow = 0; switches++;
+          if (c.level <= 2) { hint.textContent = 'Rule cracked! Psst: now the rule has changed.'; c.bonus(fx, 25, 'Rule cracked!'); }
+        }
+        c.later(next, 520);
+      };
+      const done = () => {
+        const acc = log.filter(x => x.ok).length / log.length;
+        const pe = log.filter(x => x.persev).length;
+        c.finish({ acc, measure: pe,
+          stats:[['Correct sorts', `${log.filter(x=>x.ok).length} / ${log.length}`], ['Rules cracked', String(switches)], ['Stuck on old rule', `${pe} ${pe===1?'time':'times'}`], ['Avg decision', ms(mean(log.map(x=>x.rt)))]],
+          insight: pe <= 1
+            ? `You let go of old rules quickly, with only ${pe} ${pe===1?'sort':'sorts'} stuck on a rule that had already changed. Dropping a strategy that stopped working is a classic job of the prefrontal cortex.`
+            : `${pe} of your misses followed the old rule after it had changed. Clinicians call this perseveration: sticking with a strategy after it stops working. Everyone does it a little, and it shrinks with practice.` });
+      };
+      c.stage.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => answer(+b.dataset.k)));
+      c.onKey(k => { const i = '1234'.indexOf(k); if (i >= 0) answer(i); });
+      c.later(next, 500);
+    },
+    science:{
+      region:'Shifting to a new sorting rule depends on the dorsolateral prefrontal cortex and its loops through the basal ganglia, which help update which rule is in charge.',
+      cite:'Grant & Berg, Journal of Experimental Psychology, 1948; Milner, Archives of Neurology, 1963',
+      clinic:'This game is modeled on the Wisconsin Card Sorting Test. Patients with frontal lobe damage often keep sorting by the old rule, a sign clinicians call perseveration.',
+      transfer:'Rule-switching gets faster with practice on the task. Whether that makes people more flexible in daily life is not established.',
+      transferCite:'Simons et al., Psychological Science in the Public Interest, 2016'
+    }
+  },
+
+  trail: {
+    domain:'spatial', name:'Neuron Trail', paradigm:'Corsi blocks', icon:'trail',
+    blurb:'Watch a signal hop across neurons, then trace its path.',
+    span: lv => 2 + Math.floor((lv - 1) / 2),
+    params(lv){ return [`starts at ${this.span(lv)} neurons`, 'gets longer when you nail it']; },
+    rules: () => ['Neurons fire one after another, sending a signal along a trail.',
+      'When they stop, tap the same neurons in the same order.',
+      'Get it right and the next trail is one step longer. Miss twice and it gets shorter.'],
+    run(c){
+      const total = 12, P = [[18,22],[50,14],[80,26],[34,46],[64,42],[86,60],[14,74],[46,80],[74,86]];
+      const startSpan = this.span(c.level);
+      let span = startSpan, fails = 0, t = -1, seq = [], pos = 0, accepting = false, maxSpan = 0, bestShown = startSpan;
+      const log = [];
+      const web = P.flatMap((a,i) => P.slice(i+1).filter(b => Math.hypot(a[0]-b[0], a[1]-b[1]) < 38).map(b => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`)).join('');
+      const NRN = `<svg viewBox="-50 -50 100 100" aria-hidden="true"><g stroke="#06081C" stroke-width="5" stroke-linecap="round"><path d="M-20 -20 L-38 -36 M20 -20 L36 -38 M-24 14 L-42 26 M22 16 L40 30 M0 26 L0 46"/></g><circle class="soma" r="26"/><circle cx="-8" cy="-9" r="6" fill="#fff" opacity=".35"/></svg>`;
+      c.stage.innerHTML = `<div class="trail-status" id="tstat" aria-live="polite">Get ready…</div>
+        <div class="tissue" id="fx"><svg class="web" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g class="webl" stroke="#8C7BD6" stroke-width=".6" stroke-dasharray="1.5 2" opacity=".7">${web}</g><g id="zaps"></g></svg>
+        ${P.map(([x,y],i) => `<button class="nrn" data-i="${i}" style="left:${x}%;top:${y}%" aria-label="Neuron ${i+1}" disabled>${NRN}</button>`).join('')}</div>
+        <p class="cue" id="tcount"></p>`;
+      const btns = [...c.stage.querySelectorAll('.nrn')], stat = $('#tstat'), cnt = $('#tcount'), fx = $('#fx');
+      const pitch = i => 392 * Math.pow(2, [0,2,4,5,7,9,11,12,14][i] / 12);
+      const flash = (i, cls = 'lit', d = 420) => { btns[i].classList.add(cls); c.later(() => btns[i].classList.remove(cls), d); };
+      const setEnabled = on => btns.forEach(b => b.disabled = !on);
+      const zap = (a, b) => {
+        const z = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        z.setAttribute('x1', P[a][0]); z.setAttribute('y1', P[a][1]); z.setAttribute('x2', P[b][0]); z.setAttribute('y2', P[b][1]); z.setAttribute('class', 'zap');
+        $('#zaps').appendChild(z); c.later(() => z.remove(), 650);
+      };
+      const next = () => {
+        t++; c.progress(t, total);
+        if (t >= total) return done();
+        seq = []; while (seq.length < span) { const n = rand(9); if (n !== seq[seq.length-1]) seq.push(n); }
+        pos = 0; accepting = false; setEnabled(false);
+        stat.textContent = `Watch the signal (${span} neurons)`; cnt.textContent = '';
+        const on = Math.max(420, 700 - c.level * 20), gap = 260;
+        seq.forEach((n, k) => c.later(() => { flash(n, 'lit', on); Sound.blip(pitch(n)); if (k) zap(seq[k-1], n); }, 500 + k * (on + gap)));
+        c.later(() => { accepting = true; setEnabled(true); stat.textContent = 'Your turn: trace the trail'; cnt.textContent = `0 / ${span}`; }, 500 + span * (on + gap));
+      };
+      const tap = i => {
+        if (!accepting) return;
+        if (i === seq[pos]) {
+          flash(i, 'lit', 250); Sound.blip(pitch(i)); pos++; cnt.textContent = `${pos} / ${span}`;
+          if (pos === seq.length) {
+            accepting = false; setEnabled(false); log.push({ ok:true, span }); maxSpan = Math.max(maxSpan, span);
+            c.hit(fx, 'var(--gold)'); stat.textContent = 'Perfect trail!'; span = Math.min(9, span + 1); fails = 0;
+            fx.classList.add('glow'); c.later(() => fx.classList.remove('glow'), 800);
+            if (span - 1 > bestShown) { bestShown = span - 1; if (bestShown >= startSpan + 2) c.bonus(fx, 20 * bestShown, `${bestShown}-neuron trail!`); }
+            c.later(next, 900);
+          }
+        } else {
+          accepting = false; setEnabled(false); flash(i, 'wrong', 500); c.miss(fx);
+          log.push({ ok:false, span }); stat.textContent = 'Signal lost! Here was the trail:';
+          seq.forEach((n,k) => c.later(() => flash(n, 'lit', 300), 500 + k * 380));
+          if (++fails >= 2) { span = Math.max(2, span - 1); fails = 0; }
+          c.later(next, 900 + seq.length * 380);
+        }
+      };
+      btns.forEach(b => b.addEventListener('click', () => tap(+b.dataset.i)));
+      const done = () => {
+        const acc = log.filter(x => x.ok).length / log.length;
+        c.finish({ acc, measure: maxSpan || NaN,
+          levelDelta: maxSpan >= startSpan + 2 ? 1 : maxSpan < startSpan ? -1 : 0,
+          stats:[['Longest trail', maxSpan ? `${maxSpan} neurons` : '–'], ['Trails traced', `${log.filter(x=>x.ok).length} / ${log.length}`], ['Starting length', `${startSpan} neurons`]],
+          insight: maxSpan
+            ? `Your longest trail was ${maxSpan} neurons. Most adults top out between 5 and 7 on this kind of task, a limit set by how much spatial information working memory can hold at once.`
+            : 'Most adults can trace 5 to 7 steps on this kind of task. Start short and the trails will grow as you improve.' });
+      };
+      c.later(next, 400);
+    },
+    science:{
+      region:'Holding a path in mind uses visuospatial working memory, which relies on the parietal cortex (especially on the right side) and the prefrontal cortex.',
+      cite:'Corsi, doctoral thesis, McGill University, 1972; Kessels et al., Applied Neuropsychology, 2000',
+      clinic:'This game is modeled on the Corsi block-tapping test, a standard neuropsychological measure of visuospatial memory used after stroke and in dementia assessment.',
+      transfer:'Like other working memory training, practice reliably improves the trained task, with little evidence of broad transfer.',
+      transferCite:'Melby-Lervåg & Hulme, Developmental Psychology, 2013'
+    }
+  }
+};
+
+let nsStab = 60;
+function stab(d){
+  nsStab = Math.max(0, Math.min(100, nsStab + d));
+  const bar = $('#stabBar'), led = $('#led'), lbl = $('#stabLbl'); if (!bar) return;
+  bar.style.width = nsStab + '%';
+  const st = nsStab >= 60 ? ['var(--good)', 'Stable'] : nsStab >= 30 ? ['var(--gold)', 'Watch closely'] : ['var(--bad)', 'Alert!'];
+  bar.style.background = st[0]; led.style.background = st[0]; lbl.textContent = 'Bed 4 · ' + st[1];
+}
+
+/* shared n-back engine: same task and scoring for every n-back theme */
+function runNback(c, cfg){
+  const lv = c.level, n = nbackN(lv), isi = nbackISI(lv), total = 20 + n;
+  const seq = [];
+  for (let i = 0; i < total; i++){
+    if (i >= n && Math.random() < 0.3) seq.push(seq[i-n]);
+    else { let s; do { s = pick(cfg.symbols); } while (i >= n && s === seq[i-n]); seq.push(s); }
+  }
+  c.stage.innerHTML = `<p class="cue">Match = same as <b>${n} back</b></p>${cfg.html}<button class="choice one" id="nbBtn">${cfg.button}<kbd>Space</kbd></button>`;
+  const fx = $('#fx');
+  let i = -1, responded = false, hits = 0, misses = 0, fa = 0, cr = 0, caught = 0;
+  const isT = k => k >= n && seq[k] === seq[k-n];
+  const close = () => {
+    if (i < n) return;
+    if (isT(i)) { if (responded) hits++; else { misses++; c.miss(fx); cfg.onMissTarget && cfg.onMissTarget(); } }
+    else { if (responded) fa++; else cr++; }
+  };
+  const next = () => {
+    if (i >= 0) close();
+    i++; c.progress(i, total);
+    if (i >= total) return c.later(done, 450);
+    responded = false; cfg.show(seq[i]);
+    c.later(() => cfg.hide(), Math.min(1200, isi * 0.55));
+    c.later(next, isi);
+  };
+  const respond = () => {
+    if (i < 0 || i >= total || responded) return;
+    responded = true;
+    if (isT(i)) { caught++; c.hit(fx, 'var(--d-memory)'); cfg.onHit && cfg.onHit(caught); }
+    else { c.miss(fx); cfg.onFalse && cfg.onFalse(); }
+  };
+  const done = () => {
+    const acc = (hits + cr) / (total - n);
+    const g = GAMES[c.id];
+    c.finish({ acc, measure: hits + misses ? hits / (hits + misses) * 100 : NaN,
+      stats:[['Level played', `${n}-back`], ['Repeats caught', `${hits} / ${hits+misses}`], ['False alarms', String(fa)], ['Pace', `${(isi/1000).toFixed(1)} s`]],
+      insight: g.insight(n) });
+  };
+  $('#nbBtn').addEventListener('click', respond);
+  c.onKey(k => { if (k === ' ') respond(); });
+  c.later(next, 500);
+}
+
+/* shapes for Space Dock: chiral polyominoes only, so a mirror image can never be rotated into the original */
+const canon = cells => { const mx = Math.min(...cells.map(p=>p[0])), my = Math.min(...cells.map(p=>p[1])); return cells.map(([x,y]) => [x-mx,y-my]).map(p=>p.join(',')).sort().join(';'); };
+const rot90 = cells => cells.map(([x,y]) => [y,-x]);
+function isChiral(cells){ const rots = []; let r = cells; for (let i = 0; i < 4; i++){ rots.push(canon(r)); r = rot90(r); } return !rots.includes(canon(cells.map(([x,y]) => [-x,y]))); }
+const SHAPES = {
+  easy:[ [[0,0],[0,1],[0,2],[1,2]], [[1,0],[2,0],[0,1],[1,1],[1,2]], [[0,0],[1,0],[0,1],[1,1],[0,2]], [[0,0],[0,1],[1,1],[1,2],[1,3]], [[0,1],[1,0],[1,1],[1,2],[1,3]] ].filter(isChiral),
+  hard:[ [[1,0],[0,1],[1,1],[2,1],[2,2],[2,3]], [[0,0],[1,0],[2,0],[2,1],[1,2],[1,3]], [[0,0],[0,1],[1,1],[1,2],[2,2],[2,3],[3,3]], [[0,0],[1,0],[1,1],[1,2],[2,2],[3,2],[3,1]] ].filter(isChiral)
+};
+function shapeSVG(cells, rot, mirror, port){
+  const S = 17, ctr = cells.map(([x,y]) => [mirror ? -(x+0.5) : x+0.5, y+0.5]);
+  const cx = mean(ctr.map(p=>p[0])), cy = mean(ctr.map(p=>p[1]));
+  const body = ctr.map(([x,y]) => {
+    const X = (x-cx)*S - S/2, Y = (y-cy)*S - S/2;
+    return port ? `<rect class="port" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${S}" height="${S}" rx="3"/>`
+      : `<rect class="hull" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${S}" height="${S}" rx="4"/><circle class="window" cx="${(X+S/2).toFixed(1)}" cy="${(Y+S/2).toFixed(1)}" r="3.2"/>`;
+  }).join('');
+  return `<svg viewBox="-64 -64 128 128" aria-hidden="true"><g transform="rotate(${rot})">${body}</g></svg>`;
+}
+
+/* ================= state ================= */
+function fresh(){
+  const games = {}, domains = {};
+  Object.keys(GAMES).forEach(id => games[id] = { level:1, history:[] });
+  Object.keys(DOMAINS).forEach(d => domains[d] = { strength:0, last:0 });
+  return { v:2, games, domains, days:{}, plan:null, sample:false, sound:false, puzzles:{ xword:{ history:[] }, terms:{ history:[] } } };
+}
+function load(){
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 2) return s; } catch(e){}
+  try { // carry progress over from version 1
+    const o = JSON.parse(localStorage.getItem(OLD_KEY));
+    if (o && o.games) {
+      const s = fresh(), map = { nback:['tower','night','memory'], stroop:['potion','firefly','inhibition'], switch:['keeper',null,'flexibility'], rotate:['dock',null,'spatial'] };
+      Object.entries(map).forEach(([old,[a,b,d]]) => { const g = o.games[old]; if (!g) return;
+        s.games[a].level = g.level || 1; s.games[a].history = (g.history || []).map(h => ({ ...h, stars:0 }));
+        if (b) s.games[b].level = Math.max(1, (g.level || 1) - 1);
+        s.domains[d] = { strength:g.strength || 0, last:g.last || 0 }; });
+      s.days = o.days || {}; s.sample = !!o.sample;
+      return s;
+    }
+  } catch(e){}
+  return null;
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+
+let state = load() || fresh();
+Object.keys(GAMES).forEach(id => { if (!state.games[id]) state.games[id] = { level:1, history:[] }; });
+Object.keys(DOMAINS).forEach(d => { if (!state.domains[d]) state.domains[d] = { strength:0, last:0 }; });
+Sound.on = false; // always start muted; the button turns it on with a tap
+
+const decayed = d => { const x = state.domains[d]; if (!x.last) return 0; return x.strength * Math.pow(0.5, (Date.now() - x.last) / HALF_LIFE); };
+const gamesIn = d => Object.keys(GAMES).filter(id => GAMES[id].domain === d);
+const domainLevel = d => mean(gamesIn(d).map(id => state.games[id].level));
+const totalStars = () => Object.values(state.games).reduce((a,g) => a + g.history.reduce((b,h) => b + (h.stars || 0), 0), 0);
+
+function ensurePlan(){
+  const today = dayKey();
+  if (state.plan && state.plan.date === today && state.plan.items.every(x => GAMES[x.id])) return;
+  const ds = Object.keys(DOMAINS), rnd = mulberry32(hashStr(today));
+  const j = {}; ds.forEach(d => j[d] = rnd());
+  const focus = [...ds].sort((a,b) => (domainLevel(a)-domainLevel(b)) || (decayed(a)-decayed(b)) || (j[a]-j[b]))[0];
+  const rest = ds.filter(d => d !== focus).sort((a,b) => (decayed(a)-decayed(b)) || (j[a]-j[b]));
+  const maintain = rest[0], rest2 = rest.slice(1), wild = rest2[Math.floor(rnd() * rest2.length)];
+  const weakestGame = d => gamesIn(d).sort((a,b) => (state.games[a].level - state.games[b].level) || (rnd() - .5))[0];
+  const anyGame = d => { const g = gamesIn(d); return g[Math.floor(rnd() * g.length)]; };
+  state.plan = { date: today, items: [
+    { id: weakestGame(focus), role:'Focus', why:`${DOMAINS[focus].name} is your lowest skill right now, so it gets extra practice.` },
+    { id: anyGame(maintain), role:'Maintain', why: state.domains[maintain].last ? `${DOMAINS[maintain].name} is fading fastest. Use it or lose it.` : `${DOMAINS[maintain].name} hasn't been trained yet. Time to wake it up.` },
+    { id: anyGame(wild), role:'Wildcard', why:'A surprise pick to keep your routine fresh.' }
+  ].map(x => ({ ...x, done:false })) };
+  save();
+}
+function streak(){ let n = 0, t = Date.now(); if (!state.days[dayKey(t)]) t -= DAY; while (state.days[dayKey(t)]) { n++; t -= DAY; } return n; }
+
+/* ================= Neuri's outfits ================= */
+const OUTFITS = [[20, 'party hat'], [50, 'glasses'], [100, 'crown']];
+function renderAccessories(){
+  const n = totalStars(), S = 'stroke="var(--outline)" stroke-width="3" stroke-linejoin="round"';
+  let h = '';
+  if (n >= 50) h += `<g fill="none" ${S}><circle cx="47" cy="58" r="11"/><circle cx="73" cy="58" r="11"/><path d="M58 57 Q60 54 62 57"/></g>`;
+  if (n >= 100) h += `<path d="M42 31 L44 10 L52 21 L60 6 L68 21 L76 10 L78 31 Z" fill="var(--gold)" ${S}/><circle cx="60" cy="22" r="3" fill="var(--d-inhibition)"/>`;
+  else if (n >= 20) h += `<path d="M47 30 L60 3 L73 30 Z" fill="var(--d-flexibility)" ${S}/><path d="M53 17 L67 17 M50 24 L70 24" stroke="#fff" stroke-width="3"/><circle cx="60" cy="4" r="5" fill="var(--d-inhibition)" ${S}/>`;
+  $('#acc').innerHTML = h;
+  const next = OUTFITS.find(([k]) => n < k);
+  $('#sStars').parentElement.title = next ? `${next[0] - n} more stars to unlock Neuri's ${next[1]}` : 'All of Neuri\'s outfits unlocked';
+  const got = OUTFITS.filter(([k]) => n >= k).length;
+  if (got > (state.outfits || 0)) { const first = state.outfits === undefined && state.sample; state.outfits = got; save(); if (!first) return OUTFITS[got - 1][1]; }
+  return null;
+}
+
+/* ================= home ================= */
+function renderSound(){
+  const b = $('#soundBtn');
+  b.setAttribute('aria-pressed', String(Sound.on));
+  b.innerHTML = `${SPEAKER(Sound.on)}<span>${Sound.on ? 'Sound on' : 'Sound off'}</span>`;
+}
+$('#soundBtn').addEventListener('click', () => { Sound.on = !Sound.on; if (Sound.on) { Sound.ensure(); Sound.good(3); } renderSound(); });
+
+function renderHome(){
+  ensurePlan();
+  $('#dateLabel').textContent = new Date().toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
+  $('#sStreak').textContent = streak();
+  $('#sStars').textContent = totalStars();
+  const unlocked = renderAccessories();
+  $('#sampleBadge').hidden = !state.sample;
+  const left = state.plan.items.filter(x => !x.done).length;
+  $('#speech').textContent = left === 3 ? `Today's focus is ${DOMAINS[GAMES[state.plan.items[0].id].domain].name.toLowerCase()}. Ready when you are!`
+    : left > 0 ? `Nice work! ${left} ${left===1?'game':'games'} left in today's circuit.` : 'Circuit complete! Your neurons thank you. See you tomorrow.';
+  if (unlocked) $('#speech').textContent = `New look unlocked: my ${unlocked}! Keep earning stars for the next one.`;
+
+  const ds = Object.keys(DOMAINS), pos = ds.map(d => DOMAINS[d]);
+  let links = '';
+  for (let a = 0; a < pos.length; a++) for (let b = a+1; b < pos.length; b++)
+    links += `<line x1="${pos[a].x}" y1="${pos[a].y}" x2="${pos[b].x}" y2="${pos[b].y}" stroke="var(--brain-line)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/>`;
+  $('#links').innerHTML = links;
+  $('#nodes').innerHTML = ds.map(d => {
+    const p = DOMAINS[d], s = decayed(d), col = `var(--d-${d})`, r = 11 + s * 0.17, op = 0.25 + (s/100) * 0.7;
+    return `<circle cx="${p.x}" cy="${p.y}" r="${(r*2).toFixed(1)}" fill="${col}" opacity="${(op*0.75).toFixed(2)}" filter="url(#blur)"/>
+      <circle cx="${p.x}" cy="${p.y}" r="${r.toFixed(1)}" fill="${col}" fill-opacity="${op.toFixed(2)}" stroke="var(--outline)" stroke-width="3.5"/>
+      <circle cx="${p.x - r*0.35}" cy="${p.y - r*0.35}" r="${(r*0.22).toFixed(1)}" fill="#fff" opacity=".7"/>
+      <text class="node-label" x="${p.x}" y="${(p.y + r + 20).toFixed(1)}" text-anchor="middle">${p.short}</text>`;
+  }).join('');
+  $('#legend').innerHTML = ds.map(d => {
+    const p = DOMAINS[d], s = decayed(d), col = `var(--d-${d})`;
+    return `<div class="leg"><i class="dot" style="background:${col}"></i><span class="leg-name">${p.name}<small>${p.region}</small></span>
+      <span class="leg-lv num">Lv ${domainLevel(d).toFixed(0)} · ${Math.round(s)}%</span><span class="bar"><i style="width:${s.toFixed(0)}%;background:${col}"></i></span></div>`;
+  }).join('');
+
+  const items = state.plan.items;
+  $('#today').innerHTML = items.map(x => {
+    const g = GAMES[x.id], col = `var(--d-${g.domain})`;
+    return `<div class="task ${x.done?'done':''}" style="--c:${col}"><div class="ic">${ICONS[g.icon]}</div>
+      <div><div class="role"><i>${x.role}</i>${DOMAINS[g.domain].name}</div><h3>${g.name}</h3></div>
+      ${x.done ? '<span class="done-mark">Done ✓</span>' : `<button class="btn" data-play="${x.id}">Play</button>`}
+      <p class="why">${x.why}</p></div>`;
+  }).join('') + (items.every(x => x.done) ? `<div class="complete">Circuit complete! Come back tomorrow for a new mix, or keep playing from the shelf.</div>` : '');
+
+  $('#shelf').innerHTML = Object.keys(GAMES).map(id => {
+    const g = GAMES[id], rec = state.games[id], best = rec.history.reduce((m,h) => Math.max(m, h.stars || 0), 0);
+    return `<button class="card sticker" data-play="${id}" style="--c:var(--d-${g.domain})"><div class="art">${ICONS[g.icon]}</div>
+      <div class="body"><span class="meta">${DOMAINS[g.domain].name} · ${g.paradigm}</span><h3>${g.name}</h3><p>${g.blurb}</p>
+      <span class="meta">Level ${rec.level}${rec.history.length ? ` · best ${'★'.repeat(best)}${'☆'.repeat(3-best)}` : ' · new'}</span></div></button>`;
+  }).join('');
+  document.querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => openGame(b.dataset.play)));
+  renderLab();
+}
+
+/* ================= game runner ================= */
+let current = null;
+function stopCurrent(){ if (current) { current.timers.forEach(clearTimeout); current = null; } }
+document.addEventListener('keydown', e => {
+  if (!current || !current.key) return;
+  if (e.key === ' ' || e.key.startsWith('Arrow')) e.preventDefault();
+  if (!e.repeat) current.key(e.key);
+});
+function show(view){
+  ['home','play','progress','facts'].forEach(v => $('#' + v).hidden = v !== view);
+  document.querySelectorAll('[data-nav]').forEach(b => { if (b.dataset.nav === view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  hideTip(); window.scrollTo(0, 0);
+}
+
+function openGame(id){
+  stopCurrent();
+  const g = GAMES[id], lv = state.games[id].level, col = `var(--d-${g.domain})`;
+  $('#play').style.setProperty('--c', col);
+  $('#play').classList.remove('wide');
+  $('#ptsVal').parentElement.hidden = false;
+  $('#stage').style.justifyContent = '';
+  $('#playTitle').textContent = g.name;
+  $('#playCount').textContent = `Level ${lv}`;
+  $('#ptsVal').textContent = '0';
+  $('#comboChip').hidden = true;
+  $('#progBar').style.width = '0%';
+  $('#stage').innerHTML = `<div class="intro">
+      <div class="art">${ICONS[g.icon]}</div>
+      <span class="role">${DOMAINS[g.domain].name} · based on the ${g.paradigm} task</span>
+      <h3>${g.name}</h3>
+      <div class="chips">${g.params(lv).map(p => `<span>${p}</span>`).join('')}</div>
+      <ul>${g.rules(lv).map(r => `<li>${r}</li>`).join('')}</ul>
+      <button class="btn" id="startBtn">Let's go!</button>
+    </div>`;
+  show('play');
+  $('#startBtn').focus();
+  $('#startBtn').addEventListener('click', () => { if (Sound.on) Sound.ensure(); countdown(id); });
+}
+
+function countdown(id){
+  current = { timers:[], key:null };
+  const stage = $('#stage'); let n = 3;
+  const tick = () => {
+    if (n === 0) { Sound.go(); return runGame(id); }
+    stage.innerHTML = `<div class="countdown num" aria-live="polite">${n}</div>`; Sound.tick();
+    n--; current.timers.push(setTimeout(tick, 650));
+  };
+  tick();
+}
+
+function runGame(id){
+  const lv = state.games[id].level, j = makeJuice();
+  const ctx = {
+    id, stage: $('#stage'), level: lv,
+    later: (fn, t) => { const h = setTimeout(fn, t); current && current.timers.push(h); return h; },
+    onKey: fn => { current.key = fn; },
+    progress: (i, total) => { $('#progBar').style.width = (Math.min(i,total)/total*100) + '%'; $('#playCount').textContent = `${Math.min(i+1,total)} / ${total}`; },
+    hit: j.hit, miss: j.miss, bonus: j.bonus,
+    finish: res => finish(id, { ...res, pts: j.pts(), best: j.best() })
+  };
+  GAMES[id].run(ctx);
+}
+
+/* combo, points, sparkles and sounds, shared by every game and puzzle */
+function makeJuice(){
+  let combo = 0, best = 0, pts = 0;
+  const comboChip = $('#comboChip'), stage = $('#stage');
+  const fx = (el, color) => {
+    if (reduceMotion || !el) return;
+    const sr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+    const x = r.left + r.width/2 - sr.left, y = r.top + r.height/2 - sr.top;
+    for (let k = 0; k < 10; k++){
+      const s = document.createElement('i'); s.className = 'spark';
+      const a = Math.random() * Math.PI * 2, d = 50 + Math.random() * 60;
+      s.style.cssText = `left:${x}px;top:${y}px;background:${color};--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px`;
+      stage.appendChild(s); setTimeout(() => s.remove(), 750);
+    }
+  };
+  const floatPts = (el, n) => {
+    if (reduceMotion || !el) return;
+    const sr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+    const f = document.createElement('span'); f.className = 'float-pts num'; f.textContent = `+${n}`;
+    f.style.left = (r.left + r.width/2 - sr.left - 14) + 'px'; f.style.top = (r.top - sr.top + 10) + 'px';
+    stage.appendChild(f); setTimeout(() => f.remove(), 850);
+  };
+  return {
+    pts: () => pts, best: () => best,
+    hit(el, color, quiet){
+      combo++; best = Math.max(best, combo);
+      const mult = 1 + Math.floor(combo / 5), gain = 10 * mult; pts += gain;
+      $('#ptsVal').textContent = pts;
+      if (combo >= 3) { comboChip.hidden = false; comboChip.textContent = `Combo ×${combo}`; comboChip.classList.remove('pop'); void comboChip.offsetWidth; comboChip.classList.add('pop'); }
+      quiet ? Sound.soft() : Sound.good(combo);
+      if (!quiet) fx(el, color);
+      floatPts(el, gain);
+      if (el && !reduceMotion) { el.classList.remove('ok'); void el.offsetWidth; el.classList.add('ok'); }
+    },
+    miss(el){
+      combo = 0; comboChip.hidden = true; Sound.bad();
+      if (el && !reduceMotion) { el.classList.remove('bad-shake'); void el.offsetWidth; el.classList.add('bad-shake'); }
+    },
+    bonus(el, n, label){
+      pts += n; $('#ptsVal').textContent = pts;
+      [784, 988, 1175].forEach((f, i) => Sound.tone(f, .12, 'triangle', .11, i * .07));
+      fx(el, 'var(--gold)'); fx(el, 'var(--d-memory)');
+      if (reduceMotion || !el) return;
+      const sr = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+      const f = document.createElement('span'); f.className = 'float-pts bonus-pts'; f.textContent = `${label} +${n}`;
+      f.style.left = (r.left + r.width/2 - sr.left) + 'px'; f.style.top = (r.top - sr.top) + 'px';
+      stage.appendChild(f); setTimeout(() => f.remove(), 1300);
+    }
+  };
+}
+
+function finish(id, res){
+  stopCurrent();
+  const g = GAMES[id], rec = state.games[id], d = g.domain, before = rec.level;
+  if (res.levelDelta !== undefined) rec.level = Math.max(1, Math.min(10, before + res.levelDelta));
+  else if (res.acc >= 0.85) rec.level = Math.min(10, before + 1);
+  else if (res.acc < 0.65) rec.level = Math.max(1, before - 1);
+  const stars = res.acc >= 0.9 ? 3 : res.acc >= 0.78 ? 2 : res.acc >= 0.6 ? 1 : 0;
+  state.domains[d].strength = Math.min(100, decayed(d) + 12 + 22 * res.acc);
+  state.domains[d].last = Date.now();
+  const prevPts = rec.history.reduce((m, h) => Math.max(m, h.pts || 0), 0);
+  const prevMs = rec.history.map(h => h.m).filter(v => v != null && isFinite(v)), Mx = MEASURE[id];
+  const newPts = rec.history.length > 0 && res.pts > prevPts;
+  const newM = prevMs.length > 0 && isFinite(res.measure) && (Mx.better === 'lower' ? res.measure < Math.min(...prevMs) : res.measure > Math.max(...prevMs));
+  rec.history.push({ d: dayKey(), acc: +res.acc.toFixed(3), level: before, stars, pts: res.pts, m: isFinite(res.measure) ? +res.measure.toFixed(1) : null });
+  state.days[dayKey()] = true;
+  ensurePlan();
+  const item = state.plan.items.find(x => x.id === id); if (item) item.done = true;
+  save();
+
+  const after = rec.level, up = after > before;
+  if (up || stars === 3 || newPts || newM) Sound.fanfare();
+  const lvl = up ? `<span class="lvl up">Level up! ${before} → ${after}</span>`
+    : after < before ? `<span class="lvl">Level ${before} → ${after}: easing off to find your sweet spot</span>`
+    : `<span class="lvl">Staying at level ${after}: right in the learning zone</span>`;
+  const nextItem = state.plan.items.find(x => !x.done), sc = g.science;
+  $('#playTitle').textContent = `${g.name} results`;
+  $('#playCount').textContent = `Session ${rec.history.length}`;
+  $('#progBar').style.width = '100%';
+  $('#comboChip').hidden = true;
+  $('#stage').innerHTML = `<div class="result">
+      <div class="res-top">
+        <div class="stars">${[0,1,2].map(k => STAR(k < stars)).join('')}</div>
+        <div><div class="role">Accuracy</div><div class="big num">${Math.round(res.acc*100)}%</div></div>
+        <div><div class="role">Points</div><div class="big num">${res.pts}</div></div>
+        ${lvl}
+        ${newPts ? '<span class="lvl up">New points record!</span>' : ''}${newM ? `<span class="lvl up">New best ${Mx.label.toLowerCase()}!</span>` : ''}
+      </div>
+      <div class="kv">${res.stats.map(([k,v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('')}<div><span>Best combo</span><b>×${res.best}</b></div></div>
+      <p class="insight">${res.insight}</p>
+      <div class="science">
+        <div><h4>What just happened in your brain</h4><p>${sc.region}</p><p class="cite">${sc.cite}</p></div>
+        <div><h4>Why it matters in the clinic</h4><p>${sc.clinic}</p></div>
+        <div><h4>How far does practice carry?</h4><p>${sc.transfer}</p><p class="cite">${sc.transferCite}</p></div>
+        <div><h4>How the difficulty adapts</h4><p>Score 85% or better and the next round gets harder. Drop below 65% and it eases off. The aim is to keep you near 75%, where practice drives the most change.</p></div>
+      </div>
+      <div class="actions">
+        ${nextItem ? `<button class="btn" id="nextBtn">Next: ${GAMES[nextItem.id].name}</button>` : ''}
+        <button class="btn alt" id="againBtn">Play again</button>
+        <button class="btn alt" id="homeBtn">Back to today</button>
+      </div>
+    </div>`;
+  if (!reduceMotion && (up || stars === 3)) {
+    const st = $('#stage'), cols = ['var(--d-memory)','var(--d-inhibition)','var(--d-flexibility)','var(--d-spatial)','var(--gold)'];
+    for (let k = 0; k < 28; k++){
+      const s = document.createElement('i'); s.className = 'spark';
+      const a = Math.random() * Math.PI * 2, dd = 80 + Math.random() * 160;
+      s.style.cssText = `left:50%;top:30%;background:${pick(cols)};--dx:${Math.cos(a)*dd}px;--dy:${Math.sin(a)*dd}px;animation-duration:1s`;
+      st.appendChild(s); setTimeout(() => s.remove(), 1050);
+    }
+  }
+  if (nextItem) $('#nextBtn').addEventListener('click', () => openGame(nextItem.id));
+  $('#againBtn').addEventListener('click', () => openGame(id));
+  $('#homeBtn').addEventListener('click', goHome);
+}
+
+/* ================= Puzzle Lab ================= */
+/* 11x11 medical crosswords: a fixed bank, one per day. Grids use # for black squares; clues are keyed by answer. */
+const XW_BANK = [["###SOW#ACL#","EMPIRE#ROAM","MASTER#ELSE","TRY#SET#LET","#ECG##WEAR#","##HEN#OAR##","#SITE##TBI#","SPA#TAP#ORS","EATS#CORNEA","ACRE#HONEST","#EYE#ERS###"],["###SPIT#SPY","#SALIVA#PIE","#TRANSPLANT","LOOP###ENT#","ARM#LUNG###","PEA#IRE#RHO","###TENT#EAR","#MOB###OARS","PEDIATRICS#","ARE#WEALTH#","YES#LEGS###"],["##EMT##WEB#","TIARA#HIDE#","ANTIBIOTIC#","RNS#LOG#TOY","###DEN#HOME","SCAR###IRES","EASY#GAP###","ENT#RUB#SEW","#CHROMOSOME","#EMIT#VALUE","#RAM##EYE##"],["###RYE##BIB","#HONEY#ALOE","#ERASE#SONG","RAG###RHO##","UVA#ADO#DRS","DEN#LIP#SEE","END#TEE#USE","##OHO###GUM","GENE#STEAL#","ATOM#HEART#","PAR##ENT###"],["SAC##EAR###","PROP#BLAME#","ACNE#BEGIN#","##CPR##ECG#","EMU#ASH#RIP","WAS#TEA#ONE","ERS#EEL#SEA","#BIN##OTC##","#LOOSE#IOTA","#ENTER#EPIC","###ETA##ENT"],["###HAM##FAN","#SWORD#RACE","#CASTS#HINT","WRITE#SORE#","HAS#RAT####","OPT#ICE#RAN","####ELM#AGO","#EARS#COVER","FAWN#SEVEN#","AREA#PLANT#","RNS##ALL###"],["###PEA#FAST","#SWEAT#IDEA","#THERE#BRAN","FUEL##BEE##","ODE##CORNER","OIL#SPA#ADO","DOCTOR##LIP","##HAY##RITE","TEAS#PIANO#","OMIT#INNER#","PURE#EKG###"],["###RIB##SPA","#SPINE#SPIT","#PHONE#KITE","#RAT##KIN##","PAR#FEE#ACE","AIM#ALE#LOW","DNA#IMP#CUE","##CPR##TON#","TRIO#ALERT#","WASP#READY#","OPT##MDS###"],["####BED#HUE","#ESTATE#ARK","#QUARANTINE","SUNG###ORS#","PAN#ABLE###","FLY#POD#ARE","###HEAL#GEL","#USE###SEAM","ULTRASOUND#","RNA#COUNTY#","NAB#ENT####"],["###WEE##AGO","#IVORY#SNAP","#RINSE#PELT","SAT####USE#","ETA#SHIRT##","EEL#HUM#HDL","##SLEEP#EWE","#LIE####SET","SIGN#SNAIL#","IONS#PETAL#","RNS##AWE###"],["###DOS#HOP#","ACCENT#APE#","GLANCE#STAB","OAR#EAR#IRE","#MDS#MUSCLE","##ION#TIN##","WOODEN#PEP#","OWL#TIP#RED","KNOT#ELEVEN","#EGO#CAMERA","#RYE#ENT###"],["#RAT##DAB##","#EVEN#ACUTE","#PENICILLIN","ION#PAL#BET","TRUE#RYE###","STEM###AIDE","###TUB#ROAR","HIS#PEA#DNA","ANTISEPTIC#","SNARE#TONE#","##YET##PER#"],["##TWO#GAS##","WHEAT#ANTS#","HEARTATTACK","ORS#EWE#TEE","###ERE#RING","#CPR###ICE#","ALES#OHM###","SAP#ETA#SPA","HIPPOCRATES","#MEAN#STEAK","##RNS#HEM##"],["###GAIN#AWL","#TWELVE#COD","CHOLESTEROL","AIR####WED#","RNS#FACE###","EKE#ERA#APT","###PEER#COY","#DIE####TIP","KIDNEYSTONE","ICE#REPORT#","TEA#SWAP###"]];
+const XW_CLUES = {"ABLE":"Capable","ABOVE":"Overhead","ACCENT":"Southern drawl, for example","ACE":"Perfect serve in tennis","ACHE":"Dull pain","ACL":"Knee ligament athletes often tear, briefly","ACNE":"Teen skin problem","ACRE":"Farm measure","ACT":"Part of a play","ACTOR":"One who plays a doctor on TV","ACUTE":"Sudden and severe, as an illness","ADO":"Fuss","ADRENALINE":"\"Fight or flight\" hormone, also called epinephrine","AGENT":"Infectious ___ (germ, in medical-speak)","AGO":"In the past","AIDE":"Nurse's ___ (hospital helper)","AIM":"Goal","AIR":"What the lungs fill with","ALE":"Pub drink","ALERT":"Wide awake","ALES":"Pub drinks","ALL":"Every bit","ALOE":"Soothing plant for a sunburn","ALTO":"Choir voice","ANESTHESIA":"It keeps you from feeling the surgery","ANT":"Colony insect","ANTIBIOTIC":"Drug that works on bacteria but not viruses","ANTISEPTIC":"Germ-killing wound wash","ANTS":"Picnic pests","APE":"Gorilla, for one","APT":"Fitting","ARC":"Curved path","ARE":"Exist","AREA":"Region","ARK":"Noah's boat","ARM":"Humerus's home","AROMA":"Pleasant smell","ARTERIES":"Vessels carrying blood away from the heart","ASH":"Volcano output","ASK":"Inquire","ASTHMA":"Condition treated with an inhaler","ATE":"Had dinner","ATOM":"Tiny unit of matter","AVENUE":"Wide street","AWE":"Wonder","AWES":"Amazes","AWL":"Leather-punching tool","BAR":"Chocolate unit","BECOME":"Turn into","BED":"Hospital ward fixture","BEE":"Insect whose sting can trigger anaphylaxis","BEG":"Plead","BEGIN":"Start","BET":"Wager","BIB":"Baby's mealtime wear","BIN":"Storage box","BLAME":"Fault","BLOODSUGAR":"Glucose level a person with diabetes tracks","BOA":"Big snake, or a feathery scarf","BRAN":"Fiber-rich part of a grain","BULB":"Light source","CAMERA":"Tiny part of an endoscope","CANCER":"Disease treated by oncologists","CAR":"Vehicle","CARDIOLOGY":"Heart specialty","CARE":"Health ___","CASTS":"Plaster wraps","CHOLESTEROL":"Waxy substance measured as HDL and LDL","CHROMOSOME":"One of 46 in most human cells","CLAIM":"Insurance filing","CLAM":"Shellfish","COD":"Fish known for its liver oil","COLLARBONE":"Clavicle, more casually","CONCUSSION":"Brain injury from a blow to the head","CORNEA":"Clear front of the eye","CORNER":"Boxing ring spot","COUNTY":"___ hospital","COVER":"Pay for, as insurance might","COY":"Shy","CPR":"Lifesaving chest compressions, briefly","CUE":"Signal","DAB":"Small amount of ointment","DAILY":"Like most multivitamins","DANCER":"Ballet performer","DEN":"Lion's home","DICE":"Cubes on a game board","DIE":"Cube with dots","DNA":"Double helix","DOCTOR":"M.D.","DOS":"Osteopaths","DRS":"Physicians, briefly","DRY":"Like skin in winter","DWELL":"Live","EAR":"Organ with a drum","EARN":"Make money","EARS":"Organs with drums","EASY":"Not hard","EAT":"Have a meal","EATS":"Has a meal","EBB":"Recede","ECG":"Heart rhythm test, briefly","EDITOR":"Journal staffer who decides what gets published","EEL":"Slippery fish","EGO":"Sense of self","EKE":"___ out (barely manage)","EKG":"Heart test, briefly","ELEVEN":"Soccer team size","ELM":"Shade tree","ELSE":"Otherwise","EMIT":"Give off","EMPIRE":"Realm","EMT":"Ambulance worker, briefly","EMU":"Flightless bird","END":"Finish","ENGINE":"Car's motor","ENT":"Ear, nose and throat doctor, briefly","ENTER":"Come in","EONS":"Ages and ages","EPIC":"Heroic poem","EQUAL":"Same","ERA":"Time period","ERASE":"Wipe out","ERE":"Before, poetically","ERS":"Emergency rooms","ESTATE":"Large property","ETA":"Arrival estimate, briefly","EVEN":"Divisible by two","EWE":"Female sheep","EYE":"Organ with an iris","FACE":"Front of the head","FAIR":"Just","FAN":"Supporter","FAR":"Distant","FAST":"Skip meals before a blood test","FAWN":"Baby deer","FEE":"Copay, for one","FIBER":"Nutrient in whole grains","FLY":"Picnic pest","FOOD":"Nutrition source","FUEL":"Glucose, for the brain","GAIN":"Weight ___","GALE":"Strong wind","GAP":"Space between teeth","GAS":"Laughing ___ (dental anesthetic)","GATE":"Airport waiting spot","GEL":"Form of hand sanitizer","GENE":"Unit of heredity","GET":"Obtain","GLANCE":"Quick look","GUM":"Tissue a dentist checks for bleeding","HAIR":"It grows from follicles","HALO":"Angel's ring","HAM":"Deli meat","HARSH":"Severe","HAS":"Owns","HAY":"___ fever (seasonal allergy)","HDL":"\"Good\" cholesterol, briefly","HEAL":"Get better","HEART":"Four-chambered pump","HEARTATTACK":"Myocardial infarction, in everyday terms","HEAVEN":"Paradise","HEM":"Skirt edge","HEN":"Egg layer","HER":"That woman","HIDE":"Conceal","HINT":"Clue","HIP":"Joint that may get replaced","HIPPOCRATES":"Ancient Greek \"father of medicine\"","HIS":"That man's","HOG":"Pig","HOME":"Where patients recover after discharge","HONEST":"Truthful","HONEY":"Soothing addition to tea for a sore throat","HOP":"Jump on one foot","HOST":"Organism a parasite lives on","HUE":"Color","HUM":"Buzz","ICE":"Pack for a sprain","IDEA":"Thought","IMP":"Mischievous one","INK":"Pen fill","INN":"Small hotel","INNER":"___ ear (seat of balance)","IODINE":"Element in table salt and antiseptics","ION":"Charged particle","IONS":"Charged particles, like electrolytes","IOTA":"Tiny bit","IRATE":"Angry","IRE":"Anger","IRES":"Angers","ITS":"Belonging to it","IVORY":"Elephant tusk material","IVS":"Drips","KEEP":"Retain","KEG":"Barrel","KIDNEYSTONE":"Painful mineral deposit in the urinary tract","KIN":"Family","KIT":"First aid ___","KITE":"Flier on a string","KNOT":"Tight spot in a sore muscle","LAP":"Once around the track","LASER":"Eye surgery tool","LDL":"\"Bad\" cholesterol, briefly","LED":"Guided","LEG":"Femur's home","LEGS":"Lower limbs","LENS":"Part of the eye that focuses light","LET":"Allow","LIE":"Rest flat","LION":"King of the jungle","LIP":"Mouth edge","LOG":"Record","LOOP":"Circle","LOOSE":"Not tight","LOW":"Like blood pressure in hypotension","LUNG":"Organ with alveoli","MARBLE":"Round game piece","MARE":"Female horse","MASTER":"Expert","MDS":"Doctors","MEAN":"Average","MERE":"Only","MET":"Encountered","MICROSCOPE":"Lab tool for viewing cells","MOB":"Crowd","MRI":"Imaging test that uses magnets, briefly","MUSCLE":"Biceps, for one","NAB":"Catch","NET":"Mesh for catching","NEW":"Fresh","NIECE":"Sibling's daughter","NIP":"Small bite","NOR":"Neither's partner","NOTE":"Doctor's ___ (school excuse)","OAR":"Rowing tool","OARS":"Rowing tools","ODE":"Poem of praise","ODES":"Poems of praise","OHM":"Unit of electrical resistance","OHO":"\"Aha!\"","OIL":"Cod liver ___","OILS":"Essential ___","OMIT":"Leave out","ONCE":"One time","ONE":"Single","OPT":"Choose","OPTICNERVE":"Link from eye to brain","ORES":"Mined rocks","ORGANDONOR":"Driver's license designation that can save lives","ORS":"Operating rooms","OTC":"Like drugs sold without a prescription, briefly","OTTER":"Playful river animal","OUT":"Not in","OVAL":"Egg shape","OWL":"Night bird","OWNER":"Possessor","PAD":"Heating ___","PAL":"Friend","PAN":"Cooking vessel","PAR":"Normal","PAY":"Wages","PEA":"Pod vegetable","PEARL":"Oyster gem","PEDIATRICS":"Children's medicine","PEEL":"What skin does after a sunburn","PEER":"___ review (journal process)","PELT":"Fur","PEN":"Prescription-writing tool","PENICILLIN":"First widely used antibiotic","PEP":"Energy","PEPPER":"Spicy seasoning","PER":"For each","PETAL":"Flower part","PHARMACIST":"Professional who fills prescriptions","PHONE":"Way to call the doctor","PIANO":"Keyboard instrument","PIE":"Dessert with a crust","PIN":"Hold a broken bone in place, surgically","PINT":"Unit of donated blood","PIT":"Fruit stone","PLAN":"Treatment ___","PLANT":"Source of many herbal medicines","POD":"Pea holder","POINT":"Sharp end of a needle","POOR":"Lacking money","POP":"Burst","PROP":"Support","PSYCHIATRY":"Mental health specialty","PURE":"Unmixed","QUARANTINE":"Isolation after exposure to a disease","RACE":"Marathon, for one","RAG":"Cleaning cloth","RAGE":"Fury","RAM":"Male sheep","RAN":"Jogged","RANG":"Made a call","RAP":"Knock","RAT":"Classic lab animal","RATE":"Heart ___","RAVEN":"Black bird","REACT":"Respond","READY":"Prepared","RED":"Like inflamed skin","REPORT":"Lab ___","RESULT":"Test ___","RHO":"Greek letter after pi","RIB":"One of 24 in the chest","RIM":"Edge","RING":"Wedding band","RINSE":"Mouthwash step","RIOT":"Uproar","RIP":"Tear","RITE":"Ceremony","RNA":"Messenger molecule, briefly","RNS":"Nurses","ROAM":"Wander","ROAR":"Lion's sound","ROPE":"Tow line","ROT":"Decay","RUB":"Massage","RUDE":"Impolite","RUT":"Same old routine","RYE":"Bread grain","SAC":"Pouch, anatomically","SALIVA":"Spit","SAP":"Tree fluid","SAT":"Took a seat","SAY":"Speak","SCAR":"Healed wound's mark","SCENE":"Accident location, to an EMT","SCRAP":"Small piece","SEA":"Ocean","SEAM":"Stitched line","SEE":"Have vision","SEEM":"Appear","SET":"Put a broken bone back in place","SEVEN":"Days in a week","SEW":"Stitch up","SHE":"That woman","SHIRT":"Top","SIGN":"Symptom's partner","SIP":"Small drink","SIR":"Knight's title","SIT":"Take a seat","SITE":"Injection ___","SKI":"Glide down a slope","SLAP":"Smack","SLEEP":"Nightly need of 7 to 9 hours","SNAIL":"Slow mover","SNAP":"Quick break","SNARE":"Trap","SOD":"Turf","SOLE":"Bottom of the foot","SON":"Male child","SONG":"Tune","SORE":"Achy","SOW":"Plant seeds","SOY":"Bean used in tofu","SPA":"Place for a wellness day","SPACE":"Room","SPAN":"Attention ___","SPF":"Sunscreen rating","SPINALCORD":"Nerve highway inside the vertebrae","SPINE":"Backbone","SPIT":"Saliva, informally","SPRAIN":"Twisted-ankle injury","SPUR":"Bone ___","SPY":"Secret agent","STAB":"Sharp pain","STATIC":"Unchanging","STAY":"Hospital ___","STEAK":"Grilled meat","STEAL":"Rob","STEAM":"Vapor for congestion","STEM":"Brain ___","STEMCELL":"Cell that can become many types","STORE":"Shop","STUDIO":"Small apartment","SUN":"Source of UV rays","SUNG":"Performed vocally","SUNNY":"Bright","SWAP":"Trade","SWEAT":"Body's cooling system","SWORD":"Fencer's blade","TABLE":"Operating ___","TAG":"Name ___ on a nurse's scrubs","TAN":"Sun-darkened","TAP":"Spinal ___","TAR":"Cigarette residue","TASTE":"Sense of the tongue","TBI":"Head injury, briefly","TEA":"Chamomile drink","TEAS":"Herbal drinks","TEE":"Golf peg","TEN":"Number of toes","TENT":"Camping shelter","THERE":"Not here","THINK":"Use your brain","TIARA":"Jeweled crown","TIE":"Even score","TIN":"Can metal","TIP":"Gratuity","TOE":"Foot digit","TON":"2,000 pounds","TONE":"Muscle firmness","TOP":"Summit","TOY":"Plaything","TRANSPLANT":"Organ replacement surgery","TRIO":"Group of three","TRUE":"Correct","TRY":"Attempt","TUB":"Bath vessel","TWELVE":"Pairs of ribs in the human chest","TWO":"Number of lungs","TYPE":"Blood ___","ULNA":"Forearm bone","ULTRASOUND":"Imaging that uses sound waves","UPSET":"Stomach complaint","URN":"Coffee server","URNS":"Coffee servers","USE":"Apply","UVA":"Kind of sun ray","VALUE":"Worth","VITALSIGNS":"Pulse, temperature and blood pressure","WAIST":"Belt line","WAR":"Conflict","WAS":"Existed","WASP":"Stinging insect","WEALTH":"Riches","WEAR":"Have on","WEB":"Spider's creation","WED":"Married","WEE":"Tiny","WERE":"Existed","WHEAT":"Grain with gluten","WHEELCHAIR":"Seat on wheels for getting around","WHO":"Global health org.","WIT":"Humor","WOK":"Stir-fry pan","WON":"Came in first","WOOD":"Tongue depressor material","WOODEN":"Made of timber","WORSE":"Not as good","WRITE":"Put pen to paper","YES":"\"Of course!\"","YET":"So far","YEW":"Tree whose bark yielded the cancer drug Taxol"};
+
+function bankPuzzle(i){
+  const g = XW_BANK[i], R = g.length, C = g[0].length, words = [];
+  let num = 0;
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    if (g[r][c] === '#') continue;
+    const a = (c === 0 || g[r][c-1] === '#') && c + 1 < C && g[r][c+1] !== '#';
+    const d = (r === 0 || g[r-1][c] === '#') && r + 1 < R && g[r+1][c] !== '#';
+    if (!a && !d) continue;
+    num++;
+    if (a) { let w = ''; for (let k = c; k < C && g[r][k] !== '#'; k++) w += g[r][k]; words.push({ w, r, c, dir:'a', num, clue: XW_CLUES[w] }); }
+    if (d) { let w = ''; for (let k = r; k < R && g[k][c] !== '#'; k++) w += g[k][c]; words.push({ w, r, c, dir:'d', num, clue: XW_CLUES[w] }); }
+  }
+  return { rows:R, cols:C, words };
+}
+const xwIndex = opts => opts.index ?? (dayNumber() % XW_BANK.length);
+
+const ROOTS = {
+  cardi:['cardi/o','heart'], neur:['neur/o','nerve'], encephal:['encephal/o','brain'], hepat:['hepat/o','liver'], nephr:['nephr/o','kidney'],
+  gastr:['gastr/o','stomach'], oste:['oste/o','bone'], arthr:['arthr/o','joint'], my:['my/o','muscle'], rhin:['rhin/o','nose'], ot:['ot/o','ear'],
+  ophthalm:['ophthalm/o','eye'], dermat:['dermat/o','skin'], hemat:['hemat/o','blood'], cyst:['cyst/o','bladder'], mening:['mening/o','meninges'], splen:['splen/o','spleen']
+};
+const SUFFIXES = {
+  itis:['-itis','inflammation'], algia:['-algia','pain'], ectomy:['-ectomy','surgical removal'], logy:['-logy','study of'],
+  megaly:['-megaly','enlargement'], oma:['-oma','tumor or mass'], pathy:['-pathy','disease'], scopy:['-scopy','looking inside with a scope']
+};
+const TERMS = [
+  ['cardi','logy','CARDIOLOGY','Study of the heart'], ['cardi','megaly','CARDIOMEGALY','Enlargement of the heart'],
+  ['neur','logy','NEUROLOGY','Study of the nerves and brain'], ['neur','algia','NEURALGIA','Nerve pain'], ['neur','pathy','NEUROPATHY','Disease of the nerves'], ['neur','oma','NEUROMA','Tumor of nerve tissue'],
+  ['encephal','itis','ENCEPHALITIS','Inflammation of the brain'], ['encephal','pathy','ENCEPHALOPATHY','Disease affecting the brain'],
+  ['hepat','itis','HEPATITIS','Inflammation of the liver'], ['hepat','megaly','HEPATOMEGALY','Enlargement of the liver'],
+  ['nephr','itis','NEPHRITIS','Inflammation of the kidney'], ['nephr','ectomy','NEPHRECTOMY','Surgical removal of a kidney'],
+  ['gastr','itis','GASTRITIS','Inflammation of the stomach'], ['gastr','scopy','GASTROSCOPY','Looking inside the stomach with a scope'], ['gastr','ectomy','GASTRECTOMY','Surgical removal of all or part of the stomach'],
+  ['arthr','itis','ARTHRITIS','Inflammation of a joint'], ['arthr','algia','ARTHRALGIA','Joint pain'], ['arthr','scopy','ARTHROSCOPY','Looking inside a joint with a scope'],
+  ['my','algia','MYALGIA','Muscle pain'], ['my','pathy','MYOPATHY','Disease of the muscles'],
+  ['rhin','itis','RHINITIS','Inflammation of the nose, as in a runny nose'], ['ot','algia','OTALGIA','Ear pain'], ['ot','scopy','OTOSCOPY','Looking inside the ear with a scope'],
+  ['ophthalm','logy','OPHTHALMOLOGY','Study of the eye'], ['dermat','itis','DERMATITIS','Inflammation of the skin'], ['dermat','logy','DERMATOLOGY','Study of the skin'],
+  ['hemat','oma','HEMATOMA','A pooled mass of blood, like a deep bruise'], ['hemat','logy','HEMATOLOGY','Study of the blood'],
+  ['cyst','itis','CYSTITIS','Inflammation of the bladder'], ['cyst','scopy','CYSTOSCOPY','Looking inside the bladder with a scope'],
+  ['mening','itis','MENINGITIS','Inflammation of the meninges'], ['splen','megaly','SPLENOMEGALY','Enlargement of the spleen'], ['oste','oma','OSTEOMA','Benign tumor of bone']
+];
+
+const PUZZLES = {
+  xword: { name:'Med Crossword', icon:'xword', color:'var(--d-memory)', blurb:'A full 11×11 crossword with medical theme answers, new every day.',
+    rules:['Click a square, or a clue, and type. Click the same square again to switch between across and down.',
+      'Check marks wrong letters. Reveal fills in the square you\'re on, but costs you a star.',
+      'Long answers are medical themes. Shorter ones mix everyday words with medical clues.',
+      'Today\'s puzzle is the same for everyone who plays today. "Another puzzle" picks one from the bank.'] },
+  terms: { name:'Term Lab', icon:'terms', color:'var(--d-inhibition)', blurb:'Build medical words from Greek and Latin parts.',
+    rules:['You get a definition. Pick the root and the ending that build the medical term.',
+      'Most medical words are built this way, so a few dozen parts unlock thousands of terms.',
+      'Meanings are hidden. You can tap Show meanings to peek, but that word earns half a point and the round tops out at 2 stars.', 'Ten words per round. First-try answers earn the points.'] }
+};
+
+function puzzleState(){ if (!state.puzzles) state.puzzles = { xword:{ history:[] }, terms:{ history:[] } }; return state.puzzles; }
+function dailyXwordDone(){ return puzzleState().xword.history.some(h => h.daily && h.d === dayKey()); }
+
+function renderLab(){
+  const ps = puzzleState();
+  $('#lab').innerHTML = Object.entries(PUZZLES).map(([id, p]) => {
+    const h = ps[id].history, best = h.reduce((m,x) => Math.max(m, x.stars || 0), 0);
+    const badge = id === 'xword' ? `<span class="lab-badge">${dailyXwordDone() ? 'Today\'s puzzle solved ✓' : 'New puzzle today'}</span>` : '';
+    return `<button class="card sticker" data-puzzle="${id}" style="--c:${p.color}"><div class="art">${ICONS[p.icon]}</div>
+      <div class="body">${badge}<span class="meta">Puzzle Lab</span><h3>${p.name}</h3><p>${p.blurb}</p>
+      <span class="meta">${h.length ? `${h.length} played · best ${'★'.repeat(best)}${'☆'.repeat(3-best)}` : 'new'}</span></div></button>`;
+  }).join('');
+  document.querySelectorAll('[data-puzzle]').forEach(b => b.addEventListener('click', () => openPuzzle(b.dataset.puzzle)));
+}
+
+function openPuzzle(id, opts = {}){
+  stopCurrent();
+  const p = PUZZLES[id];
+  $('#play').style.setProperty('--c', p.color);
+  $('#play').classList.toggle('wide', id === 'xword');
+  $('#playTitle').textContent = p.name;
+  $('#playCount').textContent = '';
+  $('#ptsVal').textContent = '0';
+  $('#ptsVal').parentElement.hidden = id === 'xword';
+  $('#comboChip').hidden = true;
+  $('#progBar').style.width = '0%';
+  const extra = id === 'xword' ? `<div class="chips"><span>${opts.random ? 'Bonus puzzle' : 'Today\'s puzzle'}</span><span>Puzzle ${xwIndex(opts) + 1} of ${XW_BANK.length}</span><span>11 × 11</span></div>` : '';
+  $('#stage').innerHTML = `<div class="intro"><div class="art">${ICONS[p.icon]}</div><span class="role">Puzzle Lab</span><h3>${p.name}</h3>${extra}
+    <ul>${p.rules.map(r => `<li>${r}</li>`).join('')}</ul><button class="btn" id="startBtn">Let's go!</button></div>`;
+  show('play');
+  $('#startBtn').focus();
+  $('#startBtn').addEventListener('click', () => {
+    if (Sound.on) Sound.ensure();
+    current = { timers:[], key:null };
+    const ctx = { stage: $('#stage'), later: (fn, t) => { const h = setTimeout(fn, t); current && current.timers.push(h); return h; } };
+    id === 'xword' ? runCrossword(ctx, opts) : runTermLab(ctx);
+  });
+}
+
+function runCrossword(c, opts){
+  const idx = xwIndex(opts), puz = bankPuzzle(idx);
+  const K = (r,c2) => r + ',' + c2, info = {};
+  puz.words.forEach((w, wi) => { for (let k = 0; k < w.w.length; k++){ const key = K(w.r + (w.dir === 'd' ? k : 0), w.c + (w.dir === 'a' ? k : 0)); info[key] = info[key] || { ch:w.w[k] }; info[key][w.dir] = wi; } });
+  let html = '';
+  for (let r = 0; r < puz.rows; r++) for (let col = 0; col < puz.cols; col++){
+    const key = K(r, col), cell = info[key];
+    if (!cell) { html += '<span class="xblk"></span>'; continue; }
+    const n = puz.words.find(w => w.r === r && w.c === col);
+    html += `<label class="xcell" data-k="${key}">${n ? `<span class="xn">${n.num}</span>` : ''}<input autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Row ${r+1}, column ${col+1}"></label>`;
+  }
+  const list = d => puz.words.map((w, i) => w.dir === d ? `<li><button data-w="${i}">${w.num}. ${w.clue} (${w.w.length})</button></li>` : '').join('');
+  c.stage.style.justifyContent = 'flex-start';
+  c.stage.innerHTML = `<div class="xwrap"><div><div class="xbanner" id="xban" aria-live="polite"></div><div class="xgrid" id="fx" style="--cols:${puz.cols}">${html}</div>
+      <div class="xtools"><button class="btn alt small" id="xPrev">◀ Prev clue</button><button class="btn alt small" id="xNext">Next clue ▶</button><button class="btn alt small" id="xCheck">Check</button><button class="btn alt small" id="xReveal">Reveal letter</button></div></div>
+    <div class="clues"><div><h4>Across</h4><ol>${list('a')}</ol></div><div><h4>Down</h4><ol>${list('d')}</ol></div></div></div>`;
+  const inputs = {}; c.stage.querySelectorAll('.xcell').forEach(l => inputs[l.dataset.k] = l.querySelector('input'));
+  const wcells = w => [...Array(w.w.length)].map((_, k) => K(w.r + (w.dir === 'd' ? k : 0), w.c + (w.dir === 'a' ? k : 0)));
+  let dir = 'a', cur = null, checks = 0, reveals = 0, secs = 0, over = false;
+  const tick = () => { if (over) return; secs++; $('#playCount').textContent = `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`; c.later(tick, 1000); };
+  $('#playCount').textContent = '0:00';
+  c.later(tick, 1000);
+  const filled =() => puz.words.filter(w => wcells(w).every(k => inputs[k].value === info[k].ch)).length;
+  const paint = () => {
+    c.stage.querySelectorAll('.xcell').forEach(l => l.classList.remove('cur','inword'));
+    c.stage.querySelectorAll('.clues button').forEach(b => b.classList.remove('on'));
+    if (!cur) return;
+    const wi = info[cur][dir], w = puz.words[wi];
+    wcells(w).forEach(k => inputs[k].parentElement.classList.add('inword'));
+    inputs[cur].parentElement.classList.add('cur');
+    const b = c.stage.querySelector(`[data-w="${wi}"]`); if (b) b.classList.add('on');
+    $('#xban').innerHTML = `<b>${w.num} ${w.dir === 'a' ? 'Across' : 'Down'}:</b> ${w.clue} (${w.w.length} letters)`;
+    puz.words.forEach((x, i) => { const bb = c.stage.querySelector(`[data-w="${i}"]`); if (bb) bb.classList.toggle('solved', wcells(x).every(k => inputs[k].value === info[k].ch)); });
+    $('#progBar').style.width = (filled() / puz.words.length * 100) + '%';
+  };
+  const select = (key, d) => {
+    if (info[key][d] === undefined) d = d === 'a' ? 'd' : 'a';
+    dir = d; cur = key; paint();
+    if (document.activeElement !== inputs[key]) inputs[key].focus({ preventScroll:false });
+  };
+  const step = delta => {
+    const w = puz.words[info[cur][dir]], cs = wcells(w), i = cs.indexOf(cur) + delta;
+    if (i >= 0 && i < cs.length) select(cs[i], dir);
+  };
+  const checkDone = () => {
+    if (over) return;
+    if (Object.keys(inputs).every(k => inputs[k].value === info[k].ch)) {
+      over = true; Sound.fanfare();
+      Object.values(inputs).forEach(x => x.readOnly = true);
+      const stars = reveals === 0 && checks <= 1 ? 3 : reveals <= 2 ? 2 : 1;
+      const ps = puzzleState(); ps.xword.history.push({ d: dayKey(), daily: !opts.random, puzzle: idx, words: puz.words.length, secs, reveals, checks, stars }); save();
+      c.later(() => puzzleResult('xword', { stars, title:`Solved in ${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`,
+        stats:[['Words', String(puz.words.length)], ['Time', `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`], ['Letters revealed', String(reveals)], ['Checks used', String(checks)]],
+        learned: puz.words.map(w => [w.w, w.clue]), again: () => { const others = XW_BANK.map((_, k) => k).filter(k => k !== idx); openPuzzle('xword', { random:true, index: pick(others) }); }, againLabel:'Another puzzle' }), 700);
+    }
+  };
+  Object.entries(inputs).forEach(([key, inp]) => {
+    inp.addEventListener('focus', () => { if (cur !== key) select(key, dir); });
+    inp.addEventListener('mousedown', e => { if (cur === key && document.activeElement === inp) { e.preventDefault(); if (info[key].a !== undefined && info[key].d !== undefined) select(key, dir === 'a' ? 'd' : 'a'); } });
+    inp.addEventListener('input', () => {
+      const v = inp.value.replace(/[^a-z]/gi, '').slice(-1).toUpperCase();
+      inp.value = v; inp.parentElement.classList.remove('wrong', 'revealed');
+      if (v) {
+        Sound.tick();
+        const w = puz.words[info[key][dir]], cs = wcells(w);
+        if (cs.indexOf(key) === cs.length - 1 && cs.every(k => inputs[k].value)) jumpWord(1); else step(1);
+      }
+      paint(); checkDone();
+    });
+    inp.addEventListener('keydown', e => {
+      const [r, col] = key.split(',').map(Number);
+      const moves = { ArrowRight:[0,1,'a'], ArrowLeft:[0,-1,'a'], ArrowDown:[1,0,'d'], ArrowUp:[-1,0,'d'] };
+      if (moves[e.key]) { e.preventDefault(); const [dr, dc, d] = moves[e.key]; if (dir !== d && info[key][d] !== undefined) return select(key, d); const nk = K(r + dr, col + dc); if (info[nk]) select(nk, d); }
+      else if (e.key === 'Backspace' && !inp.value) { e.preventDefault(); step(-1); if (cur !== key) { inputs[cur].value = ''; paint(); } }
+    });
+  });
+  c.stage.querySelectorAll('[data-w]').forEach(b => b.addEventListener('click', () => {
+    const w = puz.words[+b.dataset.w], cs = wcells(w); select(cs.find(k => !inputs[k].value) || cs[0], w.dir);
+  }));
+  const jumpWord = delta => {
+    const order = puz.words.map((w, i) => i).sort((a, b) => (puz.words[a].dir === puz.words[b].dir ? 0 : puz.words[a].dir === 'a' ? -1 : 1) || puz.words[a].num - puz.words[b].num);
+    const at = cur ? order.indexOf(info[cur][dir]) : -1;
+    for (let k = 1; k <= order.length; k++) {
+      const w = puz.words[order[(at + delta * k + order.length * 2) % order.length]], cs = wcells(w);
+      const empty = cs.find(x => !inputs[x].value);
+      if (empty || k === order.length) { select(empty || cs[0], w.dir); return; }
+    }
+  };
+  $('#xPrev').addEventListener('click', () => jumpWord(-1));
+  $('#xNext').addEventListener('click', () => jumpWord(1));
+  $('#xCheck').addEventListener('click', () => {
+    checks++; let bad = 0;
+    Object.keys(inputs).forEach(k => { if (inputs[k].value && inputs[k].value !== info[k].ch) { inputs[k].parentElement.classList.add('wrong'); bad++; } });
+    bad ? Sound.bad() : Sound.good(2);
+    $('#xban').innerHTML = bad ? `<b>${bad} ${bad===1?'letter needs':'letters need'} another look.</b> They're marked in red.` : '<b>Everything so far is right.</b> Keep going!';
+    if (cur) inputs[cur].focus();
+  });
+  $('#xReveal').addEventListener('click', () => {
+    if (!cur) return; reveals++;
+    inputs[cur].value = info[cur].ch; inputs[cur].parentElement.classList.remove('wrong'); inputs[cur].parentElement.classList.add('revealed');
+    step(1); paint(); checkDone();
+  });
+  select(wcells(puz.words[0])[0], puz.words[0].dir);
+}
+
+function runTermLab(c){
+  const j = makeJuice(), rounds = [...TERMS].sort(() => Math.random() - .5).slice(0, 10);
+  let r = -1, firstTry = true, score = 0, pickR = null, pickS = null, busy = false;
+  let showMeans = false, hinted = false, usedAny = false, hintedWords = 0;
+  const fmtScore = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
+  const applyMeans = () => {
+    const wrap = $('#termwrap'), b = $('#meanBtn'); if (!wrap) return;
+    wrap.classList.toggle('hide-means', !showMeans);
+    b.setAttribute('aria-pressed', String(showMeans));
+    b.textContent = showMeans ? 'Hide meanings' : 'Show meanings';
+  };
+  const next = () => {
+    r++; $('#progBar').style.width = (r / rounds.length * 100) + '%'; $('#playCount').textContent = `${Math.min(r+1, 10)} / 10`;
+    if (r >= rounds.length) return finishTerms();
+    const [root, suf, , def] = rounds[r];
+    const roots = [root, ...Object.keys(ROOTS).filter(x => x !== root).sort(() => Math.random() - .5).slice(0, 3)].sort(() => Math.random() - .5);
+    const sufs = [suf, ...Object.keys(SUFFIXES).filter(x => x !== suf).sort(() => Math.random() - .5).slice(0, 3)].sort(() => Math.random() - .5);
+    firstTry = true; pickR = pickS = null; busy = false; hinted = showMeans;
+    if (hinted) usedAny = true;
+    c.stage.innerHTML = `<div class="lab-top"><button class="btn alt small" id="meanBtn" aria-pressed="false">Show meanings</button>
+        <span class="fine">Peeking halves this word's points and caps the round at 2 stars.</span><span class="tag num">Score ${fmtScore(score)}</span></div>
+      <p class="cue">Build the medical term for:</p><div class="deftext" id="fx">${def}</div>
+      <div id="termwrap" class="termwrap">
+        <div class="tilerow"><span class="role">Pick the root (the body part)</span><div class="tiles4">${roots.map(x => `<button class="wtile" data-r="${x}"><b>${ROOTS[x][0]}</b><span>${ROOTS[x][1]}</span></button>`).join('')}</div></div>
+        <div class="tilerow"><span class="role">Pick the ending (what's happening)</span><div class="tiles4">${sufs.map(x => `<button class="wtile" data-s="${x}"><b>${SUFFIXES[x][0]}</b><span>${SUFFIXES[x][1]}</span></button>`).join('')}</div></div>
+      </div>
+      <div class="built" id="built" aria-live="polite">? + ?</div><p class="explain" id="explain"></p>`;
+    applyMeans();
+    $('#meanBtn').addEventListener('click', () => {
+      showMeans = !showMeans;
+      if (showMeans && !busy) { hinted = true; usedAny = true; }
+      applyMeans();
+    });
+    c.stage.querySelectorAll('[data-r]').forEach(b => b.addEventListener('click', () => { if (busy) return; pickR = b.dataset.r; mark(); }));
+    c.stage.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', () => { if (busy) return; pickS = b.dataset.s; mark(); }));
+  };
+  const mark = () => {
+    c.stage.querySelectorAll('[data-r]').forEach(b => b.classList.toggle('sel', b.dataset.r === pickR));
+    c.stage.querySelectorAll('[data-s]').forEach(b => b.classList.toggle('sel', b.dataset.s === pickS));
+    $('#built').textContent = `${pickR ? ROOTS[pickR][0] : '?'} + ${pickS ? SUFFIXES[pickS][0] : '?'}`;
+    if (pickR && pickS) judge();
+  };
+  const judge = () => {
+    const [root, suf, word] = rounds[r], fx = $('#fx');
+    if (pickR === root && pickS === suf) {
+      busy = true;
+      if (hinted) hintedWords++;
+      if (firstTry) { score += hinted ? 0.5 : 1; j.hit(fx, 'var(--gold)'); } else Sound.good(1);
+      $('#built').textContent = `${word} ✓`;
+      $('#explain').textContent = `${ROOTS[root][0]} (${ROOTS[root][1]}) + ${SUFFIXES[suf][0]} (${SUFFIXES[suf][1]}) = ${word.toLowerCase()}.${firstTry && hinted ? ' Half a point, since meanings were showing.' : ''}`;
+      c.later(next, 2000);
+    } else {
+      firstTry = false; j.miss(fx);
+      $('#explain').textContent = `${ROOTS[pickR][0]} + ${SUFFIXES[pickS][0]} isn't it. Try another pair.`;
+      pickR = pickS = null; c.later(mark, 900);
+    }
+  };
+  const finishTerms = () => {
+    let stars = score === 10 ? 3 : score >= 8 ? 2 : score >= 5 ? 1 : 0;
+    if (usedAny) stars = Math.min(stars, 2);
+    puzzleState().terms.history.push({ d: dayKey(), score, total: 10, stars, pts: j.pts(), hinted: hintedWords }); save();
+    if (stars === 3) Sound.fanfare();
+    puzzleResult('terms', { stars, title:`${fmtScore(score)} / 10`, pts: j.pts(),
+      stats:[['Score', `${fmtScore(score)} / 10`], ['Words with meanings shown', String(hintedWords)], ['Points', String(j.pts())], ['Best combo', `×${j.best()}`]],
+      note: usedAny ? 'Meanings were showing this round, so the most you could earn was 2 stars.' : '',
+      learned: rounds.map(([root, suf, word, def]) => [word, `${def}: ${ROOTS[root][0]} (${ROOTS[root][1]}) + ${SUFFIXES[suf][0]} (${SUFFIXES[suf][1]})`]), again: () => openPuzzle('terms'), againLabel:'Play again' });
+  };
+  next();
+}
+
+function puzzleResult(id, o){
+  stopCurrent();
+  const p = PUZZLES[id], st = $('#stage');
+  st.style.justifyContent = '';
+  $('#playTitle').textContent = `${p.name} results`;
+  $('#progBar').style.width = '100%';
+  st.innerHTML = `<div class="result">
+    <div class="res-top"><div class="stars">${[0,1,2].map(k => STAR(k < o.stars)).join('')}</div><div class="big">${o.title}</div></div>
+    <div class="kv">${o.stats.map(([k,v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>
+    <h3>Words in this round</h3>
+    <div class="learned">${o.learned.map(([w,d]) => `<div><b>${w}</b>${d}</div>`).join('')}</div>
+    ${o.note ? `<p class="insight">${o.note}</p>` : ''}
+    <p class="fine">Puzzle Lab builds vocabulary. These are knowledge puzzles, not research tasks, so they don't change your circuit map.</p>
+    <div class="actions"><button class="btn" id="pAgain">${o.againLabel}</button><button class="btn alt" id="homeBtn">Back to today</button></div></div>`;
+  $('#pAgain').addEventListener('click', o.again);
+  $('#homeBtn').addEventListener('click', goHome);
+}
+
+/* ================= daily facts ================= */
+// Add facts here, one per line: { text: 'The fact itself.', source: 'Author, Journal, Year' }
+// One fact shows per day, in list order, and everyone sees the same fact on the same day.
+const FACTS = [
+];
+function factState(){ if (!state.facts) state.facts = { seen:null, log:[] }; return state.facts; }
+const dayNumber = () => { const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY); };
+function todaysFact(){ return FACTS.length ? FACTS[dayNumber() % FACTS.length] : null; }
+function logFact(){
+  const f = todaysFact(); if (!f) return;
+  const fs = factState(), k = dayKey();
+  if (!fs.log.some(x => x.d === k)) fs.log.push({ d:k, text:f.text, source:f.source || '' });
+  fs.log = fs.log.slice(-5);
+}
+let factReturn = null;
+function showFactModal(){
+  const f = todaysFact();
+  $('#factText').textContent = f ? f.text : 'Daily facts are on their way. Check back soon for a new brain fact every day.';
+  $('#factSrc').textContent = f && f.source ? 'Source: ' + f.source : '';
+  factReturn = document.activeElement;
+  $('#factModal').hidden = false; $('#factOk').focus();
+  factState().seen = dayKey(); logFact(); save();
+}
+function closeFact(){ $('#factModal').hidden = true; if (factReturn && factReturn.focus) factReturn.focus(); }
+function maybeShowFact(){ if (factState().seen !== dayKey()) showFactModal(); }
+$('#factOk').addEventListener('click', closeFact);
+$('#factMore').addEventListener('click', () => { closeFact(); location.hash = 'facts'; });
+$('#factModal').addEventListener('click', e => { if (e.target.id === 'factModal') closeFact(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#factModal').hidden) closeFact(); });
+$('#factAgain').addEventListener('click', showFactModal);
+function renderFacts(){
+  logFact(); save();
+  const list = [...factState().log].reverse(), today = dayKey();
+  $('#factList').innerHTML = list.length ? '' : `<div class="factcard sticker"><p class="fact-text">No facts yet.</p><p class="fine">Each day you open Rewire, that day's fact is saved here. The last five stay on this page.</p></div>`;
+  list.forEach(x => {
+    const card = document.createElement('div'); card.className = 'factcard sticker' + (x.d === today ? ' today' : '');
+    const lab = document.createElement('span'); lab.className = 'role'; lab.textContent = x.d === today ? 'Today' : new Date(x.d + 'T12:00').toLocaleDateString(undefined, { weekday:'long', month:'short', day:'numeric' });
+    const tx = document.createElement('p'); tx.className = 'fact-text'; tx.textContent = x.text;
+    card.append(lab, tx);
+    if (x.source) { const sc = document.createElement('p'); sc.className = 'fact-src'; sc.textContent = 'Source: ' + x.source; card.appendChild(sc); }
+    $('#factList').appendChild(card);
+  });
+}
+
+/* ================= routing ================= */
+function route(){
+  stopCurrent();
+  if (location.hash === '#progress') { show('progress'); renderProgress(); }
+  else if (location.hash === '#facts') { show('facts'); renderFacts(); }
+  else { renderHome(); show('home'); }
+}
+function goHome(){ if (location.hash === '#progress' || location.hash === '#facts') location.hash = ''; else route(); }
+window.addEventListener('hashchange', route);
+document.querySelectorAll('[data-nav]').forEach(b => b.addEventListener('click', () => {
+  const want = b.dataset.nav === 'home' ? '' : '#' + b.dataset.nav;
+  if ((location.hash || '') === want || (want === '' && location.hash === '#')) route(); else location.hash = want;
+}));
+$('#exitBtn').addEventListener('click', goHome);
+
+/* ================= progress view ================= */
+const MEASURE = {
+  tower:  { label:'Repeats caught',     unit:'%',    better:'higher' },
+  night:  { label:'Repeats caught',     unit:'%',    better:'higher' },
+  potion: { label:'Stroop interference', unit:' ms', better:'lower' },
+  firefly:{ label:'Wasps tapped',        unit:'%',    better:'lower' },
+  keeper: { label:'Switch cost',         unit:' ms', better:'lower' },
+  dock:   { label:'Rotation cost',       unit:' ms/°', better:'lower', eps:.3, dec:1 },
+  sort:   { label:'Stuck on old rule',   unit:'×',    better:'lower', eps:.5 },
+  trail:  { label:'Longest trail',       unit:' neurons', better:'higher', eps:.5 }
+};
+const fmtM = (id, v) => v == null || !isFinite(v) ? '–' : (MEASURE[id].dec ? v.toFixed(MEASURE[id].dec) : Math.round(v)) + MEASURE[id].unit;
+const fmtDate = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d).toLocaleDateString(undefined, { month:'short', day:'numeric' }); };
+const SVGNS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+
+const tip = $('#tip');
+function showTip(lines, x, y){
+  tip.replaceChildren();
+  lines.forEach((t, i) => { const n = document.createElement(i ? 'span' : 'b'); n.textContent = t; tip.appendChild(n); });
+  tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let L = x + 14, T = y - h - 12;
+  if (L + w > innerWidth - 8) L = x - w - 14;
+  if (T < 8) T = y + 16;
+  tip.style.left = Math.max(8, L) + 'px'; tip.style.top = T + 'px';
+}
+function hideTip(){ tip.hidden = true; }
+
+function allSessions(){
+  const rows = [];
+  Object.keys(GAMES).forEach(id => state.games[id].history.forEach((h, i) => rows.push({ id, i, ...h })));
+  return rows.sort((a,b) => a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
+}
+function dayCounts(){ const c = {}; allSessions().forEach(r => c[r.d] = (c[r.d] || 0) + 1); return c; }
+function longestStreak(){
+  const keys = Object.keys(state.days).filter(k => state.days[k]).sort();
+  let best = 0, run = 0, prev = null;
+  keys.forEach(k => { const t = new Date(k + 'T12:00').getTime(); run = prev !== null && Math.round((t - prev) / DAY) === 1 ? run + 1 : 1; best = Math.max(best, run); prev = t; });
+  return best;
+}
+
+function renderProgress(){
+  $('#pSample').hidden = !state.sample;
+  const rows = allSessions(), counts = dayCounts();
+  const since = dayKey(Date.now() - 29 * DAY);
+  const days30 = Object.keys(counts).filter(k => k >= since).length;
+  const tiles = [
+    ['Sessions played', rows.length, 'across all games'],
+    ['Days practiced', days30, 'in the last 30 days'],
+    ['Current streak', streak(), streak() === 1 ? 'day' : 'days'],
+    ['Longest streak', longestStreak(), 'days in a row'],
+    ['Stars earned', totalStars(), 'out of ' + rows.length * 3]
+  ];
+  $('#pTiles').innerHTML = tiles.map(([l,v,s]) => `<div class="tile sticker"><span>${l}</span><b>${v}</b><small>${s}</small></div>`).join('');
+  renderCalendar(counts);
+  const cw = $('.cal-wrap'); cw.scrollLeft = cw.scrollWidth;
+  renderMultiples();
+  renderTable(rows);
+}
+
+function renderCalendar(counts){
+  const cal = $('#pCal'); cal.replaceChildren();
+  const weeks = 16, today = new Date(); today.setHours(12,0,0,0);
+  const start = new Date(today); start.setDate(start.getDate() - today.getDay() - (weeks - 1) * 7);
+  const lab = document.createElement('span'); lab.className = 'dl'; cal.appendChild(lab);
+  ['', 'Mon', '', 'Wed', '', 'Fri', ''].forEach(t => { const s = document.createElement('span'); s.className = 'dl'; s.textContent = t; cal.appendChild(s); });
+  let lastMonth = -1, lastLabelW = -9;
+  for (let w = 0; w < weeks; w++){
+    const first = new Date(start); first.setDate(start.getDate() + w * 7);
+    const ml = document.createElement('span'); ml.className = 'ml';
+    const endOfWeek = new Date(first); endOfWeek.setDate(first.getDate() + 6);
+    const mo = endOfWeek.getMonth();
+    if (mo !== lastMonth) { if (w - lastLabelW >= 3 && !(w === 0 && endOfWeek.getDate() > 21)) { ml.textContent = endOfWeek.toLocaleDateString(undefined, { month:'short' }); lastLabelW = w; } lastMonth = mo; }
+    cal.appendChild(ml);
+    for (let d = 0; d < 7; d++){
+      const day = new Date(first); day.setDate(first.getDate() + d);
+      const c = document.createElement('span');
+      if (day > today) { c.style.visibility = 'hidden'; c.className = 'c'; cal.appendChild(c); continue; }
+      const k = dayKey(day.getTime()), n = counts[k] || 0;
+      c.className = 'c' + (k === dayKey() ? ' today' : '');
+      c.dataset.n = String(Math.min(n, 3));
+      c.tabIndex = 0;
+      const label = `${n} ${n === 1 ? 'session' : 'sessions'}`, when = day.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
+      c.setAttribute('aria-label', `${when}: ${label}`);
+      const on = e => { const r = c.getBoundingClientRect(); showTip([label, when], r.left + r.width/2, r.top); };
+      c.addEventListener('pointerenter', on); c.addEventListener('focus', on);
+      c.addEventListener('pointerleave', hideTip); c.addEventListener('blur', hideTip);
+      cal.appendChild(c);
+    }
+  }
+}
+
+function renderMultiples(){
+  const host = $('#pGames'); host.replaceChildren();
+  Object.keys(GAMES).forEach(id => {
+    const g = GAMES[id], rec = state.games[id], h = rec.history, M = MEASURE[id];
+    const card = document.createElement('div'); card.className = 'gcard'; card.style.setProperty('--c', `var(--d-${g.domain})`);
+    const ms_ = h.map(x => x.m).filter(v => v != null && isFinite(v));
+    const bestAcc = h.length ? Math.max(...h.map(x => x.acc)) : null;
+    const topLv = h.length ? Math.max(...h.map(x => x.level)) : rec.level;
+    const bestM = ms_.length ? (M.better === 'lower' ? Math.min(...ms_) : Math.max(...ms_)) : null;
+    card.innerHTML = `<div class="ghead"><div class="ic">${ICONS[g.icon]}</div><div><h3>${g.name}</h3><small>${DOMAINS[g.domain].name} · ${g.paradigm} · ${h.length} ${h.length===1?'session':'sessions'}</small></div></div>
+      <div class="lc"></div>`;
+    host.appendChild(card);
+    levelChart(card.querySelector('.lc'), id);
+    if (h.length) {
+      const m = document.createElement('div'); m.className = 'measure';
+      let delta = '';
+      if (ms_.length >= 2) {
+        const a = ms_[0], b = ms_[ms_.length - 1], diff = b - a, improved = M.better === 'lower' ? diff < 0 : diff > 0;
+        const small = Math.abs(diff) < (M.eps ?? 3);
+        delta = small ? `<span class="delta flat">about the same</span>`
+          : `<span class="delta ${improved ? 'good' : 'badd'}">${diff < 0 ? '↓' : '↑'} ${fmtM(id, Math.abs(diff))} ${improved ? 'better' : 'worse'}</span>`;
+      }
+      m.innerHTML = `<span class="ml2">${M.label} · first session → latest</span>
+        <span class="mv">${ms_.length ? `${fmtM(id, ms_[0])} → ${fmtM(id, ms_[ms_.length-1])}` : 'Not enough data yet'}${delta}</span>`;
+      if (ms_.length >= 2) m.appendChild(sparkline(ms_, `var(--cv-${g.domain})`, `${M.label} over ${ms_.length} sessions`));
+      card.appendChild(m);
+      const prs = document.createElement('div'); prs.className = 'prs';
+      prs.innerHTML = `<span>Highest level played ${topLv}</span><span>Next round: level ${rec.level}</span><span>Best accuracy ${Math.round(bestAcc * 100)}%</span>${bestM != null ? `<span>Best ${M.label.toLowerCase()} ${fmtM(id, bestM)}</span>` : ''}`;
+      card.appendChild(prs);
+    }
+  });
+}
+
+function levelChart(host, id){
+  const g = GAMES[id], h = state.games[id].history, col = `var(--cv-${g.domain})`;
+  host.replaceChildren();
+  if (!h.length) { host.innerHTML = `<p class="empty">No sessions yet. Play ${g.name} to start this line.</p>`; return; }
+  const W = Math.max(240, host.clientWidth || 300), H = 150, m = { l:30, r:52, t:12, b:24 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b, n = h.length;
+  const x = i => m.l + (n === 1 ? pw / 2 : i / (n - 1) * pw);
+  const y = v => m.t + (10 - v) / 9 * ph;
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, tabindex:'0', role:'img',
+    'aria-label': `${g.name}: level by session. ${n} sessions, from level ${h[0].level} to level ${h[n-1].level}. Use arrow keys to step through sessions.` }, host);
+  [1, 5, 10].forEach(v => {
+    el('line', { x1:m.l, x2:W - m.r, y1:y(v), y2:y(v), stroke:'var(--grid)', 'stroke-width':1 }, svg);
+    el('text', { x:m.l - 8, y:y(v) + 4, 'text-anchor':'end', class:'ax' }, svg).textContent = v;
+  });
+  el('text', { x:m.l, y:H - 6, class:'ax' }, svg).textContent = 'Session 1';
+  if (n > 1) el('text', { x:W - m.r, y:H - 6, 'text-anchor':'end', class:'ax' }, svg).textContent = `Session ${n}`;
+  let d = `M${x(0)} ${y(h[0].level)}`;
+  for (let i = 1; i < n; i++) d += ` H${x(i)} V${y(h[i].level)}`;
+  if (n > 1) {
+    el('path', { d: `${d} V${y(1)} H${x(0)} Z`, fill: col, 'fill-opacity':.1, stroke:'none' }, svg);
+    el('path', { d, fill:'none', stroke: col, 'stroke-width':2, 'stroke-linejoin':'round', 'stroke-linecap':'round' }, svg);
+  }
+  const last = h[n-1];
+  el('circle', { cx:x(n-1), cy:y(last.level), r:5, fill:col, stroke:'var(--surface)', 'stroke-width':2 }, svg);
+  el('text', { x:x(n-1) + 9, y:y(last.level) + 4, class:'endlab' }, svg).textContent = `Lv ${last.level}`;
+  const cross = el('line', { y1:m.t, y2:m.t + ph, stroke:'var(--muted)', 'stroke-width':1, visibility:'hidden' }, svg);
+  const dot = el('circle', { r:5, fill:col, stroke:'var(--surface)', 'stroke-width':2, visibility:'hidden' }, svg);
+  const hit = el('rect', { x:m.l - 10, y:0, width:pw + 20, height:H, fill:'transparent' }, svg);
+  let cur = n - 1;
+  const focusAt = (i, cx, cy) => {
+    cur = i; const s = h[i];
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(s.level)); dot.setAttribute('visibility', 'visible');
+    const r = svg.getBoundingClientRect(), sx = r.width / W;
+    showTip([`Level ${s.level}`, `Session ${i+1} · ${fmtDate(s.d)}`, `Accuracy ${Math.round(s.acc*100)}% · ${'★'.repeat(s.stars||0)}${'☆'.repeat(3-(s.stars||0))}`,
+      ...(s.m != null ? [`${MEASURE[id].label}: ${fmtM(id, s.m)}`] : [])],
+      cx ?? r.left + x(i) * sx, cy ?? r.top + y(s.level) * sx);
+  };
+  const clear = () => { cross.setAttribute('visibility','hidden'); dot.setAttribute('visibility','hidden'); hideTip(); };
+  hit.addEventListener('pointermove', e => {
+    const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * W / r.width;
+    const i = n === 1 ? 0 : Math.max(0, Math.min(n - 1, Math.round((px - m.l) / pw * (n - 1))));
+    focusAt(i, e.clientX, e.clientY);
+  });
+  hit.addEventListener('pointerleave', clear);
+  svg.addEventListener('focus', () => focusAt(cur));
+  svg.addEventListener('blur', clear);
+  svg.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); focusAt(Math.max(0, Math.min(n - 1, cur + (e.key === 'ArrowRight' ? 1 : -1)))); }
+  });
+}
+
+function sparkline(vals, col, label){
+  const W = 120, H = 34, n = vals.length, lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+  const x = i => 3 + i / (n - 1) * (W - 6), y = v => 4 + (hi - v) / span * (H - 8);
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, role:'img', 'aria-label': label });
+  el('path', { d: vals.map((v,i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' '), fill:'none', stroke:'var(--muted)', 'stroke-width':2, 'stroke-linejoin':'round', 'stroke-linecap':'round', opacity:.7 }, svg);
+  el('circle', { cx:x(n-1), cy:y(vals[n-1]), r:4, fill:col, stroke:'var(--surface)', 'stroke-width':2 }, svg);
+  return svg;
+}
+
+function renderTable(rows){
+  const t = $('#pTable');
+  const head = ['Date','Game','Skill','Level','Accuracy','Stars','Key measure'];
+  t.innerHTML = `<thead><tr>${head.map(x => `<th scope="col">${x}</th>`).join('')}</tr></thead>`;
+  const tb = document.createElement('tbody');
+  if (!rows.length) tb.innerHTML = `<tr><td colspan="7">No sessions yet. Your games will show up here.</td></tr>`;
+  [...rows].reverse().forEach(r => {
+    const tr = document.createElement('tr'), g = GAMES[r.id];
+    [[fmtDate(r.d)], [g.name], [DOMAINS[g.domain].name], [r.level, 'n'], [Math.round(r.acc*100) + '%', 'n'], [r.stars || 0, 'n'], [r.m != null ? `${MEASURE[r.id].label}: ${fmtM(r.id, r.m)}` : '–']]
+      .forEach(([v, cls]) => { const td = document.createElement('td'); td.textContent = v; if (cls) td.className = cls; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
+}
+
+function toCSV(){
+  const lines = ['date,game,skill,paradigm,level,accuracy,stars,measure,measure_value,measure_unit'];
+  allSessions().forEach(r => { const g = GAMES[r.id], M = MEASURE[r.id];
+    lines.push([r.d, g.name, DOMAINS[g.domain].name, g.paradigm, r.level, r.acc, r.stars || 0, M.label, r.m ?? '', M.unit.trim()].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')); });
+  return lines.join('\n');
+}
+$('#csvBtn').addEventListener('click', () => {
+  const csv = toCSV(), box = $('#csvBox'), msg = $('#csvMsg');
+  const fallback = () => { box.value = csv; box.hidden = false; box.focus(); box.select(); msg.textContent = 'Copying is blocked here, so the data is selected below. Press Ctrl+C or ⌘C to copy it.'; };
+  try {
+    navigator.clipboard.writeText(csv).then(() => { msg.textContent = `Copied ${allSessions().length} sessions. Paste into a spreadsheet, or load it in Python with pandas.`; }, fallback);
+  } catch(e){ fallback(); }
+});
+let rz = null;
+window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (!$('#progress').hidden) renderMultiples(); }, 150); });
+
+/* ================= sample + reset ================= */
+$('#sampleBtn').addEventListener('click', () => {
+  // A simulated month of play. Measures drift toward better values with practice, plus noise, like real learning curves.
+  const now = Date.now(), r = mulberry32(42), noise = s => (r() - .5) * 2 * s;
+  state = fresh(); state.sample = true;
+  const curve = { tower:[58,86,6], night:[55,84,6], potion:[190,85,25], firefly:[32,10,6], keeper:[360,170,45], dock:[9,4.5,1.2], sort:[8,2,1.5], trail:[4,6,.6] };
+  const skill = { tower:.0, night:-.03, potion:.06, firefly:.04, keeper:-.04, dock:-.02, sort:.01, trail:.03 };
+  const ids = Object.keys(GAMES), count = {};
+  ids.forEach(id => count[id] = 0);
+  for (let ago = 34; ago >= 1; ago--) {
+    if (r() > (ago > 20 ? .55 : .8)) continue;
+    const t = now - ago * DAY + 9 * 3600e3, played = [...ids].sort(() => r() - .5).slice(0, 2 + (r() < .4 ? 1 : 0));
+    played.forEach(id => {
+      const g = state.games[id], [a, b, s] = curve[id], j = count[id]++;
+      const acc = Math.max(.45, Math.min(.98, .76 + skill[id] + noise(.12) - (g.level - 3) * .015 + Math.min(j, 10) * .006));
+      const mv = a + (b - a) * (1 - Math.exp(-j / 5)) + noise(s);
+      const stars = acc >= .9 ? 3 : acc >= .78 ? 2 : acc >= .6 ? 1 : 0;
+      g.history.push({ d: dayKey(t), acc: +acc.toFixed(3), level: g.level, stars, pts: Math.round(180 + acc * 200), m: id === 'trail' || id === 'sort' ? Math.max(0, Math.round(mv)) : +mv.toFixed(1) });
+      if (acc >= .85) g.level = Math.min(10, g.level + 1); else if (acc < .65) g.level = Math.max(1, g.level - 1);
+      const dm = state.domains[GAMES[id].domain];
+      const dec = dm.last ? dm.strength * Math.pow(.5, (t - dm.last) / HALF_LIFE) : 0;
+      dm.strength = Math.min(100, dec + 12 + 22 * acc); dm.last = t;
+      state.days[dayKey(t)] = true;
+    });
+  }
+  save(); route();
+});
+let armed = null;
+$('#resetBtn').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (!armed) { b.textContent = 'Tap again to erase everything'; b.classList.add('warn');
+    armed = setTimeout(() => { b.textContent = 'Reset progress'; b.classList.remove('warn'); armed = null; }, 3500); return; }
+  clearTimeout(armed); armed = null; b.textContent = 'Reset progress'; b.classList.remove('warn');
+  state = fresh(); save(); route();
+});
+
+renderSound();
+route();
+maybeShowFact();
+})();
+</script>
+
+</body>
+</html>
